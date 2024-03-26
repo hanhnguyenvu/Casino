@@ -4,14 +4,14 @@ import scala.util.Random
 class Deck:
   val suits = mutable.Buffer("Hearts","Diamonds","Clubs","Spades")
   val names = mutable.Buffer("2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A")
-  var deck : mutable.Buffer[Cards] =
+  var decks : mutable.Buffer[Cards] =
     for {s <- suits
          n <- names}
     yield
-      new Cards(s,n)
-  def shuffled = Random.shuffle(deck)
+      Cards(s,n)
+  def shuffled = Random.shuffle(decks)
   var remainings = shuffled
-  def dealFromStart(players: List[Player],table: Table, game: Game) = //haven't included the dealing method for each player
+  def dealFromStart(players: mutable.Buffer[Player],table: Table, game: Game) = //haven't included the dealing method for each player
     if game.gameStart then
       for player<-players do
         player.hand = shuffled.take(4)
@@ -21,7 +21,7 @@ class Deck:
         remainings.drop(4)
 
   def deal(player:Player) =
-    if deck.nonEmpty then
+    if decks.nonEmpty && remainings.nonEmpty then
       val drawnCard = remainings.head
       player.hand += drawnCard
       remainings.drop(0)
