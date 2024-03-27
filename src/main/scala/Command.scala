@@ -8,4 +8,4 @@ class Command (input: String) :
     case "put down" => Some(player.putdown(target))
     case "show" => Some(player.show())
     case "quit" => Some(player.quit())
-    case _ => throw new IllegalArgumentException("Needs to choose an action")
+

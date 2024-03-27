@@ -1,7 +1,7 @@
 import scala.collection.mutable
 
-class Table:
+class Table(val game:Game):
   var cardsOnTable = mutable.Buffer[Cards]()
-  var isEmpty: Boolean = cardsOnTable.isEmpty
+  def isEmpty: Boolean = cardsOnTable.isEmpty
   def isOnTable(card:Cards): Boolean = cardsOnTable.contains(card) 
   

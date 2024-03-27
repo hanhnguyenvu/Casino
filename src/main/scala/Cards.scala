@@ -1,28 +1,27 @@
 
-class Cards(val suit: String, val name: String) :
-  var game = textBased.game
+class Cards(val suit: String, val name: String, val game: Game) :
 
-  def realName = name match {
-    case "A"|"a"|"Ace"|"ace" => "Ace"
-    case "2"|"Two"|"two" => "2"
-    case "3"|"Three"|"three" => "3"
-    case "4"|"Four"|"four" => "4"
-    case "5"|"Five"|"five" => "5"
-    case "6"|"Six"|"six" => "6"
-    case "7"|"Seven"|"seven" => "7"
-    case "8"|"Eight"|"eight" => "8"
-    case "9"|"Nine"|"nine" => "9"
-    case "10"|"Ten"|"ten" => "10"
-    case "J"|"Jack"|"jack" => "Jack"
-    case "Q"|"Queen"|"queen" => "Queen"
-    case "K"|"King"|"king" => "King"
+  def realName = name.toLowerCase match {
+    case "a"|"ace" => "Ace"
+    case "2" => "2"
+    case "3" => "3"
+    case "4" => "4"
+    case "5" => "5"
+    case "6" => "6"
+    case "7" => "7"
+    case "8" => "8"
+    case "9" => "9"
+    case "10" => "10"
+    case "j"|"jack" => "Jack"
+    case "q"|"queen" => "Queen"
+    case "k"|"king" => "King"
     case _ => throw new IllegalArgumentException("Invalid card name")}
 
-  def realSuitName = suit match {
-    case "Hearts"|"hearts" => "Hearts"
-    case "Diamonds"|"diamonds" => "Diamonds"
-    case "Clubs"|"clubs" => "Clubs"
-    case "Spades"|"spades" => "Spades"
+  def realSuitName = suit.toLowerCase match {
+    case "hearts" => "Hearts"
+    case "diamonds" => "Diamonds"
+    case "clubs" => "Clubs"
+    case "spades" => "Spades"
     case _ => throw new IllegalArgumentException("Invalid suit")}
 
   def value: Int = realName match {

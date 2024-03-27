@@ -1,0 +1,16 @@
+<component name="libraryTable">
+  <library name="scalatest.funsuite_2.13" type="repository">
+    <properties maven-id="org.scalatest:scalatest-funsuite_2.13:3.2.16" />
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/scalatest/scalatest-funsuite_2.13/3.2.16/scalatest-funsuite_2.13-3.2.16.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/scala-lang/scala-library/2.13.10/scala-library-2.13.10.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/scalatest/scalatest-core_2.13/3.2.16/scalatest-core_2.13-3.2.16.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/scalatest/scalatest-compatible/3.2.16/scalatest-compatible-3.2.16.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/scalactic/scalactic_2.13/3.2.16/scalactic_2.13-3.2.16.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/scala-lang/modules/scala-xml_2.13/2.1.0/scala-xml_2.13-2.1.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/org/scala-lang/scala-reflect/2.13.10/scala-reflect-2.13.10.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

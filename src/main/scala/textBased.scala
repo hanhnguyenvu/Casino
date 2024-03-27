@@ -16,15 +16,21 @@ object textBased extends App:
     print(s"Player ${i}: ")
     val playerName = scala.io.StdIn.readLine()
     playerNames += playerName
-    game.addPlayer(Player(playerName))
+    game.addPlayer(Player(playerName,game))
 
   println("Let's start")
   gameDeck.dealFromStart(game.players, table, game)
 
+  def showTable() =
+    println("Table: ")
+    table.cardsOnTable.foreach(println)
+
   def whatCommand() =
-    val command = readLine("Command: ")
-    val turn = this.game.playTurn(command)
+    var command = readLine("\nCommand: ")
+    this.game.playTurn(command)
 
   while !game.endGame do
+    showTable()
     whatCommand()
+
 //the validating algorithm
