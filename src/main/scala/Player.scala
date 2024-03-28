@@ -41,6 +41,8 @@ class Player (val name: String,val game:Game) :
           pile += b
           table.cardsOnTable -= b
         hand -= chosenCard
+        if best.size == 4 then 
+          println("Sweep!")
 
 
   def putdown(card: String): Unit =
