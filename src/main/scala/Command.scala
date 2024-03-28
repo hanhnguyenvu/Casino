@@ -4,8 +4,7 @@ class Command (input: String) :
   val target  = commandText.drop(action.length).trim
 
   def askAction (player: Player) = action match
-    case "capture" => Some(player.capture(target))
-    case "put down" => Some(player.putdown(target))
+    case "play" => Some(player.move(target))
     case "show" => Some(player.show())
     case "quit" => Some(player.quit())
 
