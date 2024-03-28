@@ -29,7 +29,7 @@ class Cards(val suit: String, val name: String, val game: Game) :
       if this.isInHand then 14
       else 1
     case "2" =>
-      if this.realSuitName == "Spades" then 15
+      if this.realSuitName == "Spades" && this.isInHand then 15
       else 2
     case "3" => 3
     case "4" => 4
@@ -39,7 +39,7 @@ class Cards(val suit: String, val name: String, val game: Game) :
     case "8" => 8
     case "9" => 9
     case "10" =>
-      if this.realSuitName == "Diamonds" then 16
+      if this.realSuitName == "Diamonds" && this.isInHand then 16
       else 10
     case "Jack" => 11
     case "Queen" => 12
