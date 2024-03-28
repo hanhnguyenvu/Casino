@@ -8,41 +8,40 @@ class Player (val name: String,val game:Game) :
   var cardsTakenFromTable: mutable.Buffer[Cards] = mutable.Buffer()
   var cardsNum = cardsTakenFromTable.size
   var SpadesNum = cardsTakenFromTable.count(card => card.realSuitName == "Spades")
+  var pile: mutable.Buffer[Cards] = mutable.Buffer()
 
-  def capture(card: String): Unit =
+  def findBestCombination(card: Cards) =
+    val values = card.value
+    val possibleCards = game.table.cardsOnTable.filter(_.value <= values)
+    if possibleCards.isEmpty then None
+    else
+      val allCombinations = (1 to possibleCards.size).flatMap(possibleCards.combinations)
+      val bestCombinations = allCombinations.find(_.map(_.value).sum == values).toBuffer
+      if bestCombinations.nonEmpty then
+        val bestCombination = bestCombinations.maxBy(_.size)
+        bestCombination
+      else None
+
+  def move(card:String) =
     var totalValue = 0
-    if table.cardsOnTable.exists(c => (c.name.toLowerCase.head == card.toLowerCase.head) && c.isOnTable) then
-      var theCards = table.cardsOnTable.filter(c => (c.name.toLowerCase.head == card.toLowerCase.head) && c.isOnTable)
-      totalValue += theCards.head.value
-    if this.hand.exists(card => card.value == totalValue) then
-      if table.cardsOnTable.exists(c =>(c.name.toLowerCase.head == card.toLowerCase.head) && c.isOnTable) then
-        var chosenCard = table.cardsOnTable.filter(c => (c.name.toLowerCase.head == card.toLowerCase.head))
-        if chosenCard.size == 1 then
-          hand.append(chosenCard.head)
-          score += chosenCard.head.value
-          table.cardsOnTable -= chosenCard.head //if there is only 1 card with that name on the table
+    if this.hand.exists(c => (c.name.toLowerCase.head == card.toLowerCase.head)) then
+      val c = this.hand.filter(c => (c.name.toLowerCase.head == card.toLowerCase.head))
+      val chosenCard = c.maxBy(_.value)
+      val min = c.minBy(_.value)
+      val minWithoutSpades = c.filter(c1 => c1.realSuitName != "Spades").minBy(_.value)
+      val best = findBestCombination(chosenCard)
+      if best.isEmpty then
+        if !c.exists(c1 => c1.realSuitName != "Spades") then
+          putdown(min.name)
         else
-          if chosenCard.head.realName == "10" then
-              if chosenCard.exists(c => c.realSuitName == "Diamonds") then             // it is better to trade for D-10 and S-2 because they have more points
-                var theCard = chosenCard.filter(c => c.realSuitName == "Diamonds").head
-                hand.append(theCard)
-                score += theCard.value
-                table.cardsOnTable -= theCard
-              else
-                var theCard = chosenCard.head
-                hand.append(theCard)
-                score += theCard.value
-                table.cardsOnTable -= theCard
-          else if chosenCard.exists(c => c.realSuitName == "Spades") then               //,or just spades because it has bonus 1 point for the one with most spade
-                var theCard = chosenCard.filter(c => c.realSuitName == "Spades").head
-                hand.append(theCard)
-                score += theCard.value
-                table.cardsOnTable -= theCard
-          else
-                var theCard = chosenCard.head
-                hand.append(theCard)
-                score += theCard.value
-                table.cardsOnTable -= theCard
+          putdown(minWithoutSpades.name)
+      else
+        for b <- best do
+          score += b.value
+          pile += b
+          table.cardsOnTable -= b
+        hand -= chosenCard
+
 
   def putdown(card: String): Unit =
     if this.hand.exists(c => (c.name.toLowerCase.head == card.toLowerCase.head)) then
