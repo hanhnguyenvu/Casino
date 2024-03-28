@@ -7,9 +7,9 @@ class CardsSpec extends AnyWordSpec with Matchers {
     "created" should {
       val game = new Game()
       "have correct suit and name" in {
-        val card = Cards("Hearts", "A",game)
-        card.suit shouldEqual "Hearts"
-        card.name shouldEqual "A"
+        val card = Cards("Hearts", "a",game)
+
+        card.realName shouldEqual "Ace"
       }
       "return correct real name" in {
         val card = Cards("Hearts", "Ace",game)
@@ -20,19 +20,19 @@ class CardsSpec extends AnyWordSpec with Matchers {
         card.realSuitName shouldEqual "Hearts"
       }
       "have correct value1" in {
-        val card = Cards("Hearts", "A",game)
+        val card = Cards("hearts", "a",game)
         val player = new Player("John",game)
         game.addPlayer(player)
         player.hand += card
         card.value shouldEqual 14
       }
       "have correct value2" in {
-        val card = Cards("Hearts", "A",game)
+        val card = Cards("Diamonds", "10",game)
         val player = new Player("John",game)
         game.addPlayer(player)
         player.hand += card
         player.hand -= card
-        card.value shouldEqual 1
+        card.value shouldEqual 10
       }
       "be in hand if in game" in {
         val game = new Game()
@@ -135,49 +135,41 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         val game = new Game()
         val player = new Player("Alice", game)
         val card = new Cards("Hearts", "A", game)
+        game.addPlayer(player)
         player.hand += card
+        game.table.cardsOnTable += Cards("Hearts","2",game)
+        game.table.cardsOnTable += Cards("Hearts","3",game)
         player.putdown("A")
         player.hand should not contain card
       }
     }
-    "capturing cards" should {
-      "add the captured cards to the hand and increase the score" in {
+    "move" should  {
+      "put down the card if no combination is found" in {
         val game = new Game()
         val player = new Player("Alice", game)
-        val table = game.table
-        val card1 = new Cards("Hearts", "A", game)
-        val card2 = new Cards("Hearts", "2", game)
-        val card3 = new Cards("Hearts", "3", game)
-        table.cardsOnTable ++= Seq(card1, card2, card3)
-        player.capture("A,2,3")
-        player.hand should contain allOf (card1, card2, card3)
-        player.score shouldEqual (card1.value + card2.value + card3.value)
-      }
-      "not add cards to the hand if the total value does not match any card in the hand" in {
+        game.addPlayer(player)
+        val card = Cards("Hearts", "A", game)
+        player.hand += card
+        game.table.cardsOnTable += Cards("Hearts", "2", game)
+        game.table.cardsOnTable += Cards("Hearts", "3", game)
+        player.move("a")
+        player.score shouldEqual 0
+  }
+      "perform properly when there exists combination" in {
         val game = new Game()
         val player = new Player("Alice", game)
-        val table = game.table
-        val card1 = new Cards("Hearts", "A", game)
-        val card2 = new Cards("Hearts", "2", game)
-        table.cardsOnTable ++= Seq(card1, card2)
-        player.capture("A,2,3")
-        player.hand should not contain card1
-        player.hand should not contain card2
-      }
-      "remove the captured cards from the table" in {
-        val game = new Game()
-        val player = new Player("Alice", game)
-        val table = game.table
-        val card1 = new Cards("Hearts", "A", game)
-        val card2 = new Cards("Hearts", "2", game)
-        val card3 = new Cards("Hearts", "3", game)
-        table.cardsOnTable ++= Seq(card1, card2, card3)
-        player.capture("A,2,3")
-        table.cardsOnTable should contain noneOf(card1, card2, card3)
-      }
+        game.addPlayer(player)
+        val card = Cards("Hearts", "A", game)
+        player.hand += card
+        game.table.cardsOnTable += Cards("Hearts", "2", game)
+        game.table.cardsOnTable += Cards("Hearts", "3", game)
+        game.table.cardsOnTable += Cards("Hearts", "J", game)
+        player.move("a")
+        player.pile.size shouldEqual 2
     }
   }
 }
+
 
 class GameSpec extends AnyWordSpec with Matchers {
   "A Game" when {
@@ -256,4 +248,5 @@ class GameSpec extends AnyWordSpec with Matchers {
       }
     }
   }
+}
 }
