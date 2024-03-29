@@ -1,6 +1,8 @@
+
 import scala.collection.mutable
 
 class Game():
+  var isValid = true
   var turn = 0
   var gameStart: Boolean = turn == 0
   var players  = mutable.Buffer[Player]()
@@ -8,7 +10,10 @@ class Game():
  // var currentPlayer = players(numTurn)      temporarily fixed
   var table = Table(this)
   var deck =  Deck(this)
-
+  var lastCapturingPlayer: Option[Player] = None
+  def setLastCapturingPlayer(player: Player): Unit =
+    lastCapturingPlayer = Some(player)
+  
   // the rounds + turn
   def addPlayer(player: Player) =
     players += player
@@ -23,21 +28,20 @@ class Game():
       var currentPlayer = players(numTurn)
       val commands = Command(input)
       commands.askAction(currentPlayer)
-      if commands.action != "show" then
+      if commands.action != "show" && commands.action != "show pile" && isValid then
         this.deck.deal(currentPlayer)
-        if numTurn < players.size then numTurn += 1
+        if numTurn + 1 < players.size  then numTurn += 1
+        else numTurn = 0
     else
       numTurn = 0
       print("Not enough players in the game. Cannot start game.")
 
-  def endGame = players.exists(p => p.score >= 16)|| deck.remainings.isEmpty
+  def endGame = players.exists(p => p.score >= 16) || deck.remainings.isEmpty || !players.exists(p => p.hand.nonEmpty)
 
   //erase the quitting player in the game
+  val quittingPlayers = players.filter(p=>p.playerQuit)
+  players --= quittingPlayers
 
 //  def save(fileName: String) =
 
 
-  //validating algorithm
-
-// over, not over
-// announcement, messageline
