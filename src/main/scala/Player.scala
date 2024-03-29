@@ -1,6 +1,6 @@
 import scala.collection.mutable
 
-class Player (val name: String,val game:Game) :
+class Player (val name: String,val game:Game):
   var playerQuit: Boolean = false
   var table = game.table 
   var hand: mutable.Buffer[Cards] = mutable.Buffer()
@@ -24,25 +24,29 @@ class Player (val name: String,val game:Game) :
 
   def move(card:String) =
     var totalValue = 0
-    if this.hand.exists(c => (c.name.toLowerCase.head == card.toLowerCase.head)) then
-      val c = this.hand.filter(c => (c.name.toLowerCase.head == card.toLowerCase.head))
+    val c = this.hand.filter(c => (c.name.toLowerCase.head == card.toLowerCase.head))
+    if c.nonEmpty then
       val chosenCard = c.maxBy(_.value)
-      val min = c.minBy(_.value)
-      val minWithoutSpades = c.filter(c1 => c1.realSuitName != "Spades").minBy(_.value)
       val best = findBestCombination(chosenCard)
       if best.isEmpty then
         if !c.exists(c1 => c1.realSuitName != "Spades") then
+          val min = c.minBy(_.value)
           putdown(min.name)
         else
+          val minWithoutSpades = c.filter(c1 => c1.realSuitName != "Spades").minBy(_.value)
           putdown(minWithoutSpades.name)
       else
+        game.setLastCapturingPlayer(this)
         for b <- best do
           score += b.value
           pile += b
           table.cardsOnTable -= b
         hand -= chosenCard
-        if best.size == 4 then 
+        if best.size == 4 then
           println("Sweep!")
+          score += 1
+    else 
+      throw new IllegalArgumentException("The specified card is not in the player's hand.")
 
 
   def putdown(card: String): Unit =
@@ -60,11 +64,14 @@ class Player (val name: String,val game:Game) :
     println(s"$name's hand:") 
     hand.foreach(println)
     println(" ")
+  def showpile(): Unit =
+    println(s"$name's pile:")
+    pile.foreach(println)
 
   def isInHand(card: Cards) : Boolean = hand.contains(card)
 
   def quit() =
     this.playerQuit = true
     "A player has quit."
-
+  
   //def save(fileName: String) =
