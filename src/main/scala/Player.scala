@@ -29,12 +29,8 @@ class Player (val name: String,val game:Game):
       val chosenCard = c.maxBy(_.value)
       val best = findBestCombination(chosenCard)
       if best.isEmpty then
-        if !c.exists(c1 => c1.realSuitName != "Spades") then
           val min = c.minBy(_.value)
           putdown(min.name)
-        else
-          val minWithoutSpades = c.filter(c1 => c1.realSuitName != "Spades").minBy(_.value)
-          putdown(minWithoutSpades.name)
       else
         game.setLastCapturingPlayer(this)
         for b <- best do
@@ -74,4 +70,4 @@ class Player (val name: String,val game:Game):
     this.playerQuit = true
     "A player has quit."
   
-  //def save(fileName: String) =
+
