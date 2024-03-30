@@ -8,4 +8,5 @@ class Command (input: String) :
     case "show" => Some(player.show())
     case "show pile" => Some(player.showpile())
     case "quit" => Some(player.quit())
+    case "save" => Some(player.save())
 
