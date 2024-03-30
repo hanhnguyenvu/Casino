@@ -1,6 +1,35 @@
 import scala.collection.mutable
 import scala.io.StdIn.readLine
+import java.io._
 
+object GameSaver:
+  def gameStateToString(game: Game): String =
+    val sb = new StringBuilder()
+
+    sb.append("Players:\n")
+    for player <- game.players do
+      sb.append(s"${player.name}: ${player.score}\n")
+      sb.append("Hand: ")
+      sb.append(player.hand.mkString(", "))
+      sb.append("\n")
+      sb.append("Pile: ")
+      sb.append(player.pile.mkString(", "))
+      sb.append("\n")
+      sb.append("---\n")
+
+    sb.append("Table: ")
+    sb.append(game.table.cardsOnTable.mkString(", "))
+    sb.append("\n")
+
+    sb.append("Deck: ")
+    sb.append(game.deck.remainings.mkString(", "))
+    sb.append("\n")
+
+    sb.append("Turns: ")
+    sb.append(game.turn)
+    sb.append(s"\nIt's ${game.players(game.turn%game.players.size).name}'s turn now.")
+
+    sb.toString()
 
 object textBased extends App:
   val game = Game()
@@ -29,6 +58,28 @@ object textBased extends App:
     table.cardsOnTable.foreach(println)
     println("")
 
+  def saveGameToFile(game: Game, filename: String): Unit =
+    val content = GameSaver.gameStateToString(game)
+    val file = new File(filename)
+    val bw = new BufferedWriter(new FileWriter(file))
+    bw.write(content)
+    bw.close()
+    println(s"Game state saved to $filename")
+
+  def saveGamePrompt(): Unit =
+    println("Do you want to save the game state? (yes/no)")
+    val response = readLine().toLowerCase()
+    if response == "yes" || response == "y" then
+      println("Enter the filename to save the game state (_.txt):")
+      val filename = readLine()
+      saveGameToFile(game, filename)
+    else
+      println("Game state not saved.")
+
+  def updatePlayers() =
+    var notQuittingPlayers = game.players.filterNot(p=>p.playerQuit)
+    game.players = notQuittingPlayers
+
   def whatCommand(): Unit =
     game.players(game.numTurn).show()
     var command = readLine(s"It's ${playerNames(game.numTurn)}'s turn. Play some cards: ")
@@ -39,15 +90,16 @@ object textBased extends App:
       else game.players.last.showpile()
     catch
       case e: Exception =>
-        println(s"An error occurred: ${e.getMessage} Please try another command.")
+        println(s"Invalid: ${e.getMessage} Please try another command.")
         var isValid = false
         whatCommand()
       case _ => var isValid = true
 
-
-  while !game.endGame do
+  while !game.endGame && !game.saved do
+    updatePlayers()
     showTable()
     whatCommand()
+
   if !game.players.exists(p => p.hand.nonEmpty) then
     val lastOption = game.lastCapturingPlayer
     val playerNotInGame = Player("notInGame",game)
@@ -68,7 +120,8 @@ object textBased extends App:
       var aces = p.pile.count(_.realName == "Ace")
       p.score += (1*aces)
 
-
   val winner = game.players.maxBy(_.score)
-  println(s"The game has ended. We have our winner. ${winner.name}, congratulations!")
+  if !game.saved then
+    println(s"The game has ended. We have our winner. ${winner.name}, congratulations!")
+  saveGamePrompt()
 
