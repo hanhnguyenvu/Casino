@@ -1,6 +1,8 @@
+import java.io.PrintWriter
 import scala.collection.mutable
 
 class Player (val name: String,val game:Game):
+  var wantsToSave = false
   var playerQuit: Boolean = false
   var table = game.table 
   var hand: mutable.Buffer[Cards] = mutable.Buffer()
@@ -69,5 +71,6 @@ class Player (val name: String,val game:Game):
   def quit() =
     this.playerQuit = true
     "A player has quit."
-  
-
+  def save() = 
+    wantsToSave = true
+    
