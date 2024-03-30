@@ -1,5 +1,4 @@
-import java.io.{BufferedWriter, File, FileWriter}
-import scala.io.Source
+
 import scala.collection.mutable
 
 class Game():
@@ -23,9 +22,7 @@ class Game():
     if table.isEmpty && players.size >= 2 then
       table.cardsOnTable = deck.remainings.take(4)
       deck.remainings.drop(4)
-      
-  var notQuittingPlayers = players.filterNot(p=>p.playerQuit)
-  players = notQuittingPlayers
+  
   
   def playTurn(input: String) =
     if players.size >= 2 then

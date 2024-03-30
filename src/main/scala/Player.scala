@@ -3,7 +3,6 @@ import scala.collection.mutable
 
 class Player (val name: String,val game:Game):
   var wantsToSave = false
-  var playerQuit: Boolean = false
   var table = game.table 
   var hand: mutable.Buffer[Cards] = mutable.Buffer()
   var score: Int = 0
@@ -68,9 +67,6 @@ class Player (val name: String,val game:Game):
 
   def isInHand(card: Cards) : Boolean = hand.contains(card)
 
-  def quit() =
-    this.playerQuit = true
-    "A player has quit."
-  def save() = 
+ 
+  def save() =
     wantsToSave = true
-    

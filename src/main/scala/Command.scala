@@ -7,6 +7,6 @@ class Command (input: String) :
     case "play" => Some(player.move(target))
     case "show" => Some(player.show())
     case "show pile" => Some(player.showpile())
-    case "quit" => Some(player.quit())
     case "save" => Some(player.save())
+    case _ => throw new IllegalArgumentException("Command not found.")
 

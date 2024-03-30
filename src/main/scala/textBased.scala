@@ -24,10 +24,10 @@ object GameSaver:
     sb.append("Deck: ")
     sb.append(game.deck.remainings.mkString(", "))
     sb.append("\n")
-
-    sb.append("Turns: ")
-    sb.append(game.turn)
-    sb.append(s"\nIt's ${game.players(game.turn%game.players.size).name}'s turn now.")
+    if !game.endGame then
+      sb.append("Turns: ")
+      sb.append(game.turn)
+      sb.append(s"\nIt's ${game.players(game.turn%game.players.size).name}'s turn now.")
 
     sb.toString()
 
@@ -76,10 +76,6 @@ object textBased extends App:
     else
       println("Game state not saved.")
 
-  def updatePlayers() =
-    var notQuittingPlayers = game.players.filterNot(p=>p.playerQuit)
-    game.players = notQuittingPlayers
-
   def whatCommand(): Unit =
     game.players(game.numTurn).show()
     var command = readLine(s"It's ${playerNames(game.numTurn)}'s turn. Play some cards: ")
@@ -96,7 +92,6 @@ object textBased extends App:
       case _ => var isValid = true
 
   while !game.endGame && !game.saved do
-    updatePlayers()
     showTable()
     whatCommand()
 
