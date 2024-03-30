@@ -22,8 +22,8 @@ class Game():
     if table.isEmpty && players.size >= 2 then
       table.cardsOnTable = deck.remainings.take(4)
       deck.remainings.drop(4)
-  
-  
+
+
   def playTurn(input: String) =
     if players.size >= 2 then
       var currentPlayer = players(numTurn)
@@ -39,5 +39,5 @@ class Game():
       numTurn = 0
       print("Not enough players in the game. Cannot start game.")
 
-  def endGame = players.exists(p => p.score >= 16) || deck.remainings.isEmpty || !players.exists(p => p.hand.nonEmpty) 
+  def endGame = players.exists(p => p.score >= 16) || deck.remainings.isEmpty || !players.exists(p => p.hand.nonEmpty)
   def saved = players.exists(p => p.wantsToSave)
