@@ -9,24 +9,19 @@ object GameSaver:
     sb.append("Players:\n")
     for player <- game.players do
       sb.append(s"${player.name}: ${player.score}\n")
-      sb.append("Hand: ")
-      sb.append(player.hand.mkString(", "))
+      sb.append(s"Hand: ${player.hand.mkString(", ")}")
       sb.append("\n")
-      sb.append("Pile: ")
-      sb.append(player.pile.mkString(", "))
+      sb.append(s"Pile: ${player.pile.mkString(", ")}")
       sb.append("\n")
       sb.append("---\n")
 
-    sb.append("Table: ")
-    sb.append(game.table.cardsOnTable.mkString(", "))
+    sb.append(s"Table: ${game.table.cardsOnTable.mkString(", ")}")
     sb.append("\n")
 
-    sb.append("Deck: ")
-    sb.append(game.deck.remainings.mkString(", "))
+    sb.append(s"Deck: ${game.deck.remainings.mkString(", ")}")
     sb.append("\n")
     if !game.endGame then
-      sb.append("Turns: ")
-      sb.append(game.turn)
+      sb.append(s"Turns: ${game.turn}")
       sb.append(s"\nIt's ${game.players(game.turn%game.players.size).name}'s turn now.")
 
     sb.toString()
