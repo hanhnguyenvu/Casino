@@ -25,7 +25,10 @@ class Player (val name: String,val game:Game):
 
   def move(card:String) =
     var totalValue = 0
-    val c = this.hand.filter(c => (c.name.toLowerCase.head == card.toLowerCase.head))
+    var c =
+      if card.length > 1 then
+        this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
+      else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
     if c.nonEmpty then
       val chosenCard = c.maxBy(_.value)
       val best = findBestCombination(chosenCard)
@@ -47,15 +50,17 @@ class Player (val name: String,val game:Game):
 
 
   def putdown(card: String): Unit =
-    if this.hand.exists(c => (c.name.toLowerCase.head == card.toLowerCase.head)) then
-      var theCards = this.hand.filter(c => (c.name.toLowerCase.head == card.toLowerCase.head))
-      if theCards.size > 1 then
-        var c = theCards.filter(c => c.realSuitName != "Spades").head //shouldn't put down spades cards
-        this.hand = this.hand.filter(cards => cards != c)
-        table.cardsOnTable += c
-      else
-        this.hand -= theCards.head
-        table.cardsOnTable += theCards.head
+    var theCards =
+      if card.length > 1 then
+        this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
+      else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
+    if theCards.size > 1 then
+      var c = theCards.filter(c => c.realSuitName != "Spades").head //shouldn't put down spades cards
+      this.hand = this.hand.filter(cards => cards != c)
+      table.cardsOnTable += c
+    else
+      this.hand -= theCards.head
+      table.cardsOnTable += theCards.head
 
   def show(): Unit =
     println(s"$name's hand:") 
