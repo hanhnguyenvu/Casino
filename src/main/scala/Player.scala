@@ -55,7 +55,7 @@ class Player (val name: String,val game:Game):
         this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
       else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
     if theCards.size > 1 then
-      var c = theCards.filter(c => c.realSuitName != "Spades").head //shouldn't put down spades cards
+      var c = theCards.filter(c => c.realSuitName != "Spades").head
       this.hand = this.hand.filter(cards => cards != c)
       table.cardsOnTable += c
     else
