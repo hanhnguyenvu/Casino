@@ -63,64 +63,55 @@ object gameLoad:
     playerscores
 
   def getPlayerHands(playerLines: Array[String],game:Game) =
-    val eachplayerin4 = playerLines.drop(1)
-    var playerhands = mutable.Buffer[mutable.Buffer[String]]()
+    val eachPlayerIn4 = playerLines.drop(1)
     var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
-    var i = 0
-    for i <- eachplayerin4.indices do
+
+    for i <- eachPlayerIn4.indices do
       if i % 4 == 1 then
-        var a = eachplayerin4(i).split(":")(1).trim
+        var a = eachPlayerIn4(i).split(":")(1).trim
         if a.contains(", ") then
           var cards = a.split(", ").toBuffer
-          playerhands += cards
-
-          for pl <- playerhands do
-            var eachbuffer = mutable.Buffer[Cards]()
-            for p <- pl do
-              if p.contains(" of ") then
-                var pname = p.split(" of ")(0).trim
-                var psuit = p.split(" of ")(1).trim
-                eachbuffer += Cards(psuit,pname,game)
-                buffer += eachbuffer
-              else buffer += mutable.Buffer()
+          var eachBuffer = mutable.Buffer[Cards]()
+          for p <- cards do
+            if p.contains(" of ") then
+              var pname = p.split(" of ")(0).trim
+              var psuit = p.split(" of ")(1).trim
+              eachBuffer += Cards(psuit, pname, game)
+          buffer += eachBuffer
         else
-            playerhands += mutable.Buffer(a)
-            if a.contains(" of ") then
-              var pname = a.split(" of ")(0).trim
-              var psuit = a.split(" of ")(1).trim
-              buffer += mutable.Buffer(Cards(psuit,pname,game))
-            else
-              buffer += mutable.Buffer()
-    buffer
-
-  def getPlayerPiles(playerLines: Array[String],game:Game) =
-    val eachplayerin4 = playerLines.drop(1)
-    var playerpiles = mutable.Buffer[mutable.Buffer[String]]()
-    var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
-    var i = 0
-    for i <- eachplayerin4.indices do
-      if i % 4 == 2 then
-        var a = eachplayerin4(i).split(":")(1).trim
-        if a.contains(", ") then
-          var cards = a.split(", ").toBuffer
-          playerpiles += cards
-          for pl <- playerpiles do
-            var eachbuffer = mutable.Buffer[Cards]()
-            for p <- pl do
-              if p.contains(" of ") then
-                var pname = p.split(" of ")(0).trim
-                var psuit = p.split(" of ")(1).trim
-                eachbuffer += Cards(psuit,pname,game)
-                buffer += eachbuffer
-              else buffer += mutable.Buffer()
-        else
-          playerpiles += mutable.Buffer(a)
           if a.contains(" of ") then
             var pname = a.split(" of ")(0).trim
             var psuit = a.split(" of ")(1).trim
-            buffer += mutable.Buffer(Cards(psuit,pname,game))
+            buffer += mutable.Buffer(Cards(psuit, pname, game))
           else
             buffer += mutable.Buffer()
+
+    buffer
+
+  def getPlayerPiles(playerLines: Array[String],game:Game) =
+    val eachPlayerIn4 = playerLines.drop(1)
+    var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
+
+    for i <- eachPlayerIn4.indices do
+      if i % 4 == 2 then
+        var a = eachPlayerIn4(i).split(":")(1).trim
+        if a.contains(", ") then
+          var cards = a.split(", ").toBuffer
+          var eachBuffer = mutable.Buffer[Cards]()
+          for p <- cards do
+            if p.contains(" of ") then
+              var pname = p.split(" of ")(0).trim
+              var psuit = p.split(" of ")(1).trim
+              eachBuffer += Cards(psuit, pname, game)
+          buffer += eachBuffer
+        else
+          if a.contains(" of ") then
+            var pname = a.split(" of ")(0).trim
+            var psuit = a.split(" of ")(1).trim
+            buffer += mutable.Buffer(Cards(psuit, pname, game))
+          else
+            buffer += mutable.Buffer()
+
     buffer
 
   def getTable(tableLines: String,game:Game) =
