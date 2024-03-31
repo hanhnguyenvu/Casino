@@ -27,14 +27,16 @@ object gameLoad:
         game.turn = turn
         game.numTurn = game.turn % playernames.size
         for i <- playernames.indices do
-          game.addPlayer(Player(playernames(i),game))
-          Player(playernames(i),game).score = playerscores(i)
-          Player(playernames(i),game).hand = playerhand(i)
-          Player(playernames(i),game).pile = playerpile(i)
-          Player(playernames(i),game).wantsToSave = false
+          val player = Player(playernames(i), game)
+          game.addPlayer(player)
+          player.score = playerscores(i)
+          player.hand = playerhand(i)
+          player.pile = playerpile(i)
+          player.wantsToSave = false
+
         game.table.cardsOnTable = tableCards
         game.deck.remainings = deckCards
-        
+
         if playernames.contains(lastcapturer) then game.setLastCapturingPlayer(Player(lastcapturer,game))
         game
       else Game()
@@ -62,40 +64,51 @@ object gameLoad:
 
   def getPlayerHands(playerLines: Array[String],game:Game) =
     val eachplayerin4 = playerLines.drop(1)
-    var playerhands = mutable.Buffer[String]()
+    var playerhands = mutable.Buffer[mutable.Buffer[String]]()
     var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
     var i = 0
     for i <- eachplayerin4.indices do
       if i % 4 == 1 then
-        playerhands += eachplayerin4(i).split(":")(1).trim
+        var a = eachplayerin4(i).split(":")(1).trim
+        var cards = a.split(", ").toBuffer
+        playerhands += cards
 
-    for p <- playerhands do
-      if p.split(" of ").length == 2 then
+    for pl <- playerhands do
+      var eachbuffer = mutable.Buffer[Cards]()
+      for p <- pl do
         var pname = p.split(" of ")(0).trim
         var psuit = p.split(" of ")(1).trim
-        var eachbuffer = mutable.Buffer[Cards]()
         eachbuffer += Cards(psuit,pname,game)
         buffer += eachbuffer
-      else buffer += mutable.Buffer[Cards]()
+
     buffer
 
   def getPlayerPiles(playerLines: Array[String],game:Game) =
     val eachplayerin4 = playerLines.drop(1)
-    var playerpiles = mutable.Buffer[String]()
+    var playerpiles = mutable.Buffer[mutable.Buffer[String]]()
     var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
     var i = 0
     for i <- eachplayerin4.indices do
       if i % 4 == 2 then
-        playerpiles += eachplayerin4(i).split(":")(1).trim
-
-    for p <- playerpiles do
-      if p.split(" of ").length == 2 then
-        var pname = p.split(" of ")(0).trim
-        var psuit = p.split(" of ")(1).trim
-        var eachbuffer = mutable.Buffer[Cards]()
-        eachbuffer += Cards(psuit,pname,game)
-        buffer += eachbuffer
-      else buffer += mutable.Buffer[Cards]()
+        var a = eachplayerin4(i).split(":")(1).trim
+        if a.contains(", ") then
+          var cards = a.split(", ").toBuffer
+          playerpiles += cards
+          for pl <- playerpiles do
+            var eachbuffer = mutable.Buffer[Cards]()
+            for p <- pl do
+              var pname = p.split(" of ")(0).trim
+              var psuit = p.split(" of ")(1).trim
+              eachbuffer += Cards(psuit,pname,game)
+              buffer += eachbuffer
+        else
+          playerpiles += mutable.Buffer(a)
+          if a.contains(" of ") then
+            var pname = a.split(" of ")(0).trim
+            var psuit = a.split(" of ")(1).trim
+            buffer += mutable.Buffer(Cards(psuit,pname,game))
+          else
+            buffer += mutable.Buffer()
     buffer
 
   def getTable(tableLines: String,game:Game) =
