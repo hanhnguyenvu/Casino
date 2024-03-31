@@ -25,6 +25,8 @@ object GameSaver:
       sb.append(s"\nIt's ${game.players(game.turn%game.players.size).name}'s turn now.")
       sb.append("\n")
       sb.append(s"Last person to capture something: ${game.lastCapturingPlayer.getOrElse(Player("_",game)).name}")
+    else sb.append("\nEnd")
+
     sb.toString()
 
 object textBased extends App:
@@ -33,9 +35,23 @@ object textBased extends App:
   def loadGame(): Unit =
     println("Enter the filename to load the game state (_.txt):")
     val filename = scala.io.StdIn.readLine()
-    val loadedGame = gameLoad.loadGameFromFile(filename)
-    val playerNames = loadedGame.players.map(_.name)
-    playGame(loadedGame, playerNames)
+    try {
+      val loadedGame = gameLoad.loadGameFromFile(filename)
+      if loadedGame.isOver then
+        println("Cannot continue because the game is over already. A new game will start.")
+        startNewGame()
+      else
+        val playerNames = loadedGame.players.map(_.name)
+        playGame(loadedGame, playerNames)
+    }
+    catch {
+      case e: FileNotFoundException =>
+        println(s"File '$filename' not found. Please make sure the file exists and try again.")
+      case e: Exception =>
+        println(s"${e.getMessage}")
+        println("Cannot continue because the game is over already. A new game will start.\n")
+        startNewGame()
+  }
 
   println("Do you want to start a new game or load from a file? If yes, enter 'load'. If not, enter anything you want, a new game will start.")
   val response = scala.io.StdIn.readLine().toLowerCase()
@@ -69,10 +85,7 @@ object textBased extends App:
 
   def playGame(game: Game,playerNames: mutable.Buffer[String]) =
     val table = game.table
-    def showTable() =
-      println("\nTable: ")
-      table.cardsOnTable.foreach(println)
-      println("")
+
 
     def saveGameToFile(game: Game, filename: String): Unit =
       val content = GameSaver.gameStateToString(game)
@@ -92,6 +105,12 @@ object textBased extends App:
       else
         println("Game state not saved.")
 
+    def showTable() =
+      if !game.isOver && !game.saved then
+        println("\nTable: ")
+        table.cardsOnTable.foreach(println)
+        println("")
+
     def whatCommand(): Unit =
       game.players(game.numTurn).show()
       var command = readLine(s"It's ${playerNames(game.numTurn)}'s turn. Play some cards (enter just the name of the card, the suit is not needed, either the short or long name will work): ")
@@ -107,9 +126,9 @@ object textBased extends App:
           whatCommand()
         case _ => var isValid = true
 
-    while !game.endGame && !game.saved do
-      showTable()
-      whatCommand()
+    while !game.endGame && !game.saved && !game.isOver do
+        showTable()
+        whatCommand()
 
     if !game.players.exists(p => p.hand.nonEmpty) then
       val lastOption = game.lastCapturingPlayer

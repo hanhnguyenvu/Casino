@@ -40,4 +40,5 @@ class Game():
       print("Not enough players in the game. Cannot start game.")
 
   def endGame = players.exists(p => p.score >= 16) || deck.remainings.isEmpty || players.exists(p => p.hand.isEmpty)
+  var isOver = this.endGame
   def saved = players.exists(p => p.wantsToSave)

@@ -8,38 +8,42 @@ object gameLoad:
       val game = Game()
       val content = source.mkString
       val contentLines = content.split("\n")
-      val playersInfo = content.split("\n").dropRight(5)
-      val tableInfo = contentLines(contentLines.indexWhere(_.startsWith("Table")))
-      val deckInfo = contentLines(contentLines.indexWhere(_.startsWith("Deck")))
-      val turnIndex = contentLines.indexWhere(_.startsWith("Turns:"))
-      val lastIndex = contentLines.indexWhere(_.startsWith("Last"))
+      if contentLines.last.startsWith("End") then
+        game.isOver = true
+        throw new IllegalArgumentException("Cannot continue because the game is over already.")
+      else
+        val playersInfo = content.split("\n").dropRight(5)
+        val tableInfo = contentLines(contentLines.indexWhere(_.startsWith("Table")))
+        val deckInfo = contentLines(contentLines.indexWhere(_.startsWith("Deck")))
+        val turnIndex = contentLines.indexWhere(_.startsWith("Turns:"))
+        val lastIndex = contentLines.indexWhere(_.startsWith("Last"))
 
-      val playernames = getPlayersNames(playersInfo)
-      val playerscores = getPlayersScores(playersInfo)
-      val playerhand = getPlayerHands(playersInfo,game)
-      val playerpile = getPlayerPiles(playersInfo,game)
-      val tableCards = getTable(tableInfo,game)
-      val deckCards = getDeck(deckInfo,game)
+        val playernames = getPlayersNames(playersInfo)
+        val playerscores = getPlayersScores(playersInfo)
+        val playerhand = getPlayerHands(playersInfo,game)
+        val playerpile = getPlayerPiles(playersInfo,game)
+        val tableCards = getTable(tableInfo,game)
+        val deckCards = getDeck(deckInfo,game)
 
-      if turnIndex != -1 then
-        val turn = contentLines(turnIndex).split(":")(1).trim.toInt
-        val lastcapturer = contentLines(lastIndex).split(":")(1).trim
-        game.turn = turn
-        game.numTurn = game.turn % playernames.size
-        for i <- playernames.indices do
-          val player = Player(playernames(i), game)
-          game.addPlayer(player)
-          player.score = playerscores(i)
-          player.hand = playerhand(i)
-          player.pile = playerpile(i)
-          player.wantsToSave = false
+        if turnIndex != -1 then
+          val turn = contentLines(turnIndex).split(":")(1).trim.toInt
+          val lastcapturer = contentLines(lastIndex).split(":")(1).trim
+          game.turn = turn
+          game.numTurn = game.turn % playernames.size
+          for i <- playernames.indices do
+            val player = Player(playernames(i), game)
+            game.addPlayer(player)
+            player.score = playerscores(i)
+            player.hand = playerhand(i)
+            player.pile = playerpile(i)
+            player.wantsToSave = false
 
-        game.table.cardsOnTable = tableCards
-        game.deck.remainings = deckCards
+          game.table.cardsOnTable = tableCards
+          game.deck.remainings = deckCards
 
-        if playernames.contains(lastcapturer) then game.setLastCapturingPlayer(Player(lastcapturer,game))
-        game
-      else Game()
+          if playernames.contains(lastcapturer) then game.setLastCapturingPlayer(Player(lastcapturer,game))
+          game
+        else Game()
     }
     finally
       source.close()
