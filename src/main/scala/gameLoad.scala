@@ -70,17 +70,27 @@ object gameLoad:
     for i <- eachplayerin4.indices do
       if i % 4 == 1 then
         var a = eachplayerin4(i).split(":")(1).trim
-        var cards = a.split(", ").toBuffer
-        playerhands += cards
+        if a.contains(", ") then
+          var cards = a.split(", ").toBuffer
+          playerhands += cards
 
-    for pl <- playerhands do
-      var eachbuffer = mutable.Buffer[Cards]()
-      for p <- pl do
-        var pname = p.split(" of ")(0).trim
-        var psuit = p.split(" of ")(1).trim
-        eachbuffer += Cards(psuit,pname,game)
-        buffer += eachbuffer
-
+          for pl <- playerhands do
+            var eachbuffer = mutable.Buffer[Cards]()
+            for p <- pl do
+              if p.contains(" of ") then
+                var pname = p.split(" of ")(0).trim
+                var psuit = p.split(" of ")(1).trim
+                eachbuffer += Cards(psuit,pname,game)
+                buffer += eachbuffer
+              else buffer += mutable.Buffer()
+        else
+            playerhands += mutable.Buffer(a)
+            if a.contains(" of ") then
+              var pname = a.split(" of ")(0).trim
+              var psuit = a.split(" of ")(1).trim
+              buffer += mutable.Buffer(Cards(psuit,pname,game))
+            else
+              buffer += mutable.Buffer()
     buffer
 
   def getPlayerPiles(playerLines: Array[String],game:Game) =
@@ -97,10 +107,12 @@ object gameLoad:
           for pl <- playerpiles do
             var eachbuffer = mutable.Buffer[Cards]()
             for p <- pl do
-              var pname = p.split(" of ")(0).trim
-              var psuit = p.split(" of ")(1).trim
-              eachbuffer += Cards(psuit,pname,game)
-              buffer += eachbuffer
+              if p.contains(" of ") then
+                var pname = p.split(" of ")(0).trim
+                var psuit = p.split(" of ")(1).trim
+                eachbuffer += Cards(psuit,pname,game)
+                buffer += eachbuffer
+              else buffer += mutable.Buffer()
         else
           playerpiles += mutable.Buffer(a)
           if a.contains(" of ") then

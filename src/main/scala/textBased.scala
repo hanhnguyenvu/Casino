@@ -37,7 +37,7 @@ object textBased extends App:
     val playerNames = loadedGame.players.map(_.name)
     playGame(loadedGame, playerNames)
 
-  println("Do you want to start a new game or load from a file? (new/load)")
+  println("Do you want to start a new game or load from a file? If yes, enter 'load'. If not, enter anything you want, a new game will start.")
   val response = scala.io.StdIn.readLine().toLowerCase()
   if response == "load" then
     loadGame()
@@ -94,7 +94,7 @@ object textBased extends App:
 
     def whatCommand(): Unit =
       game.players(game.numTurn).show()
-      var command = readLine(s"It's ${playerNames(game.numTurn)}'s turn. Play some cards: ")
+      var command = readLine(s"It's ${playerNames(game.numTurn)}'s turn. Play some cards (enter just the name of the card, the suit is not needed, either the short or long name will work): ")
       try
         game.playTurn(command)
         if game.numTurn >= 1 then
