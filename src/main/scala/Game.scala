@@ -29,8 +29,8 @@ class Game():
       var currentPlayer = players(numTurn)
       val commands = Command(input)
       commands.askAction(currentPlayer)
-      if commands.action != "show" && commands.action != "show pile" && isValid && currentPlayer.hand.size < 4 then
-        this.deck.deal(currentPlayer)
+      if commands.action != "show" && commands.action != "show pile" && isValid  then
+        if currentPlayer.hand.size == 3 then this.deck.deal(currentPlayer)
         if numTurn + 1 < players.size  then
           numTurn += 1
           turn += 1
