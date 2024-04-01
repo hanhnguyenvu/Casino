@@ -1,7 +1,7 @@
-import java.io.PrintWriter
 import scala.collection.mutable
 
 class Player (val name: String,val game:Game):
+  var isDealer = false
   var wantsToSave = false
   var table = game.table 
   var hand: mutable.Buffer[Cards] = mutable.Buffer()
@@ -24,43 +24,48 @@ class Player (val name: String,val game:Game):
       else None
 
   def move(card:String) =
-    var totalValue = 0
-    var c =
-      if card.length > 1 then
-        this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
-      else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
-    if c.nonEmpty then
-      val chosenCard = c.maxBy(_.value)
-      val best = findBestCombination(chosenCard)
-      if best.isEmpty then
-          val min = c.minBy(_.value)
-          putdown(min.name)
+    if !isDealer then
+      var totalValue = 0
+      var c =
+        if card.length > 1 then
+          this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
+        else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
+      if c.nonEmpty then
+        val chosenCard = c.maxBy(_.value)
+        val best = findBestCombination(chosenCard)
+        if best.isEmpty then
+            val min = c.minBy(_.value)
+            putdown(min.name)
+        else
+          game.setLastCapturingPlayer(this)
+          for b <- best do
+            score += b.value
+            pile += b
+            table.cardsOnTable -= b
+          hand -= chosenCard
+          if best.size == 4 then
+            println("Sweep!")
+            score += 1
       else
-        game.setLastCapturingPlayer(this)
-        for b <- best do
-          score += b.value
-          pile += b
-          table.cardsOnTable -= b
-        hand -= chosenCard
-        if best.size == 4 then
-          println("Sweep!")
-          score += 1
-    else 
-      throw new IllegalArgumentException("The specified card is not in the player's hand.")
+        throw new IllegalArgumentException("The specified card is not in the player's hand.")
+    else
+      throw new IllegalArgumentException("You are a dealer in this round. Cannot play cards.")
 
 
   def putdown(card: String): Unit =
-    var theCards =
-      if card.length > 1 then
-        this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
-      else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
-    if theCards.size > 1 then
-      var c = theCards.filter(c => c.realSuitName != "Spades").head
-      this.hand = this.hand.filter(cards => cards != c)
-      table.cardsOnTable += c
-    else
-      this.hand -= theCards.head
-      table.cardsOnTable += theCards.head
+    if !isDealer then
+      var theCards =
+        if card.length > 1 then
+          this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
+        else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
+      if theCards.size > 1 then
+        var c = theCards.filter(c => c.realSuitName != "Spades").head
+        this.hand = this.hand.filter(cards => cards != c)
+        table.cardsOnTable += c
+      else
+        this.hand -= theCards.head
+        table.cardsOnTable += theCards.head
+    else throw new IllegalArgumentException("You are a dealer in this round. Cannot play cards.")
 
   def show(): Unit =
     println(s"$name's hand:") 
@@ -72,6 +77,6 @@ class Player (val name: String,val game:Game):
 
   def isInHand(card: Cards) : Boolean = hand.contains(card)
 
- 
   def save() =
-    wantsToSave = true
+      wantsToSave = true
+

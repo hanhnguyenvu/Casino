@@ -9,14 +9,19 @@ class Deck(val game: Game) :
          n <- names}
     yield
       Cards(s,n,game)
-  def shuffled = Random.shuffle(decks)
-  var remainings = shuffled
-  def dealFromStart(players: mutable.Buffer[Player],table: Table, game: Game) = //haven't included the dealing method for each player
+  var remainings = decks
+  def shuffled() = 
+    remainings = Random.shuffle(remainings)
+  
+  def dealFromStart(players: mutable.Buffer[Player],table: Table, game: Game) = 
     if game.gameStart then
-      for player<-players do
+      var notDealer = players.filterNot(p => p.isDealer)
+      for player<-notDealer do
+        player.hand.clear()
         player.hand = remainings.take(4)
         remainings = remainings.drop(4)
       for _ <- 1 until 4 do
+        table.cardsOnTable.clear()
         table.cardsOnTable = remainings.take(4)
         remainings.drop(4)
 
@@ -24,4 +29,4 @@ class Deck(val game: Game) :
     if remainings.nonEmpty then
       val drawnCard = remainings.head
       player.hand += drawnCard
-      remainings -= drawnCard
+      remainings.drop(1)
