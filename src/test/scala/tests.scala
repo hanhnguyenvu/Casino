@@ -160,7 +160,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         val game = new Game()
         val player = new Player("Alice", game)
         game.addPlayer(player)
-        val card = Cards("Hearts", "A", game)
+        val card = Cards("Hearts", "Ace", game)
         player.hand += card
         game.table.cardsOnTable += Cards("Hearts", "2", game)
         game.table.cardsOnTable += Cards("Hearts", "3", game)
