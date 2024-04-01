@@ -1,7 +1,9 @@
 import scala.collection.mutable
 
 class Player (val name: String,val game:Game):
+  var sweep = 0
   var isDealer = false
+  var wantsToDeal = false
   var wantsToSave = false
   var table = game.table 
   var hand: mutable.Buffer[Cards] = mutable.Buffer()
@@ -10,6 +12,10 @@ class Player (val name: String,val game:Game):
   var cardsNum = cardsTakenFromTable.size
   var SpadesNum = cardsTakenFromTable.count(card => card.realSuitName == "Spades")
   var pile: mutable.Buffer[Cards] = mutable.Buffer()
+
+  def deal() =
+    if isDealer then wantsToDeal = true
+    else throw new IllegalArgumentException("You are not the dealer.")
 
   def findBestCombination(card: Cards) =
     val values = card.value
@@ -38,14 +44,15 @@ class Player (val name: String,val game:Game):
             putdown(min.name)
         else
           game.setLastCapturingPlayer(this)
+          if best.size == table.cardsOnTable.size then
+            println("Sweep!")
+            sweep += 1
           for b <- best do
             score += b.value
             pile += b
             table.cardsOnTable -= b
           hand -= chosenCard
-          if best.size == 4 then
-            println("Sweep!")
-            score += 1
+
       else
         throw new IllegalArgumentException("The specified card is not in the player's hand.")
     else
@@ -68,7 +75,7 @@ class Player (val name: String,val game:Game):
     else throw new IllegalArgumentException("You are a dealer in this round. Cannot play cards.")
 
   def show(): Unit =
-    println(s"$name's hand:") 
+    println(s"$name's hand:")
     hand.foreach(println)
     println(" ")
   def showpile(): Unit =

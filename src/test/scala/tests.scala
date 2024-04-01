@@ -74,6 +74,7 @@ class DeckSpec extends AnyWordSpec with Matchers {
         player1.hand.length shouldEqual 4
         player2.hand.length shouldEqual 4
         table.cardsOnTable.length shouldEqual 4
+        deck.remainings.size shouldEqual 40
       }
     }
     "dealt to player" should {

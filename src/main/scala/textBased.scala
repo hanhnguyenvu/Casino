@@ -8,6 +8,7 @@ object GameSaver:
     val sb = new StringBuilder()
 
     sb.append("Players:\n")
+    sb.append(s"Current dealer: ${game.players(game.dealerIndex).name}\n")
     for player <- game.players do
       sb.append(s"${player.name}: ${player.score}\n")
       sb.append(s"Hand: ${player.hand.mkString(", ")}")
@@ -37,20 +38,16 @@ object textBased extends App:
     val filename = scala.io.StdIn.readLine()
     try {
       val loadedGame = gameLoad.loadGameFromFile(filename)
-      if loadedGame.isOver then
-        println("Cannot continue because the game is over already. A new game will start.")
-        startNewGame()
-      else
-        val playerNames = loadedGame.players.map(_.name)
-        playGame(loadedGame, playerNames)
+      val playerNames = loadedGame.players.map(_.name)
+      playGame(loadedGame, playerNames)
     }
     catch {
       case e: FileNotFoundException =>
         println(s"File '$filename' not found. Please make sure the file exists and try again.")
-      case e: Exception =>
-        println(s"${e.getMessage}")
-        println("Cannot continue because the game is over already. A new game will start.\n")
-        startNewGame()
+      //case e: Exception =>
+        //println(s"${e.getMessage}")
+        //println("Cannot continue because the game is over already. A new game will start.\n")
+        //startNewGame()
   }
 
   println("Do you want to start a new game or load from a file? If yes, enter 'load'. If not, enter anything you want, a new game will start.")
@@ -79,13 +76,34 @@ object textBased extends App:
       playerNames += playerName
       game.addPlayer(Player(playerName,game))
 
+    val dealer = game.players(game.dealerIndex)
+
+    game.players(game.dealerIndex).isDealer = true
+
     println("Let's start!")
     gameDeck.dealFromStart(game.players, table, game)
     playGame(game, playerNames)
 
   def playGame(game: Game,playerNames: mutable.Buffer[String]) =
     val table = game.table
+    val dealer = game.players(game.dealerIndex)
+    def setDealer() = game.players(game.dealerIndex).isDealer = true
+    var totalScores =  Array.fill(game.players.length)(mutable.Buffer[Int]())
 
+    def startNewRound(): Unit =
+      if game.players.exists(p => p.score >= 16) then
+        for i <- game.players.indices do
+          totalScores(i) += game.players.map(p=>p.score)(i)
+        game.players.foreach(p => p.score = 0)
+        game.gameStart = true
+        game.players(game.dealerIndex).isDealer = false
+        game.dealerIndex = (game.dealerIndex + 1) % game.players.size
+        game.players(game.dealerIndex).isDealer = true
+        game.numTurn = (game.dealerIndex + 1) % game.players.size
+        game.deck.shuffled()
+        game.deck.dealFromStart(game.players, table, game)
+        println("\nNew round\n")
+        game.endRound = false
 
     def saveGameToFile(game: Game, filename: String): Unit =
       val content = GameSaver.gameStateToString(game)
@@ -106,19 +124,28 @@ object textBased extends App:
         println("Game state not saved.")
 
     def showTable() =
-      if !game.isOver && !game.saved then
+      if !game.endGame && !game.saved then
         println("\nTable: ")
         table.cardsOnTable.foreach(println)
         println("")
 
     def whatCommand(): Unit =
-      game.players(game.numTurn).show()
-      var command = readLine(s"It's ${playerNames(game.numTurn)}'s turn. Play some cards (enter just the name of the card, the suit is not needed, either the short or long name will work): ")
+      if !game.players(game.numTurn).isDealer && game.players(game.numTurn).hand.isEmpty then game.numTurn = (game.numTurn + 1)%game.players.size
+      if !game.players(game.numTurn).isDealer then
+        game.players(game.numTurn).show()
+      else
+        if game.dealerIndex > 0 then game.players(game.dealerIndex - 1).showpile()
+        else game.players.last.showpile()
+      var command: String =
+        if !game.players(game.numTurn).isDealer then
+          readLine(s"It's ${playerNames(game.numTurn)}'s turn. Play some cards (enter just the name of the card, the suit is not needed, either the short or long name will work): ")
+        else readLine(s"\nIt's ${playerNames(game.numTurn)}'s turn. ${playerNames(game.numTurn)} is the current dealer. You can only see your hand or pile in this round. Deal for the next player to play.\n")
       try
         game.playTurn(command)
-        if game.numTurn >= 1 then
-          game.players(game.numTurn-1).showpile()
-        else game.players.last.showpile()
+        if !game.players(game.numTurn).isDealer then
+          if game.numTurn >= 1 then
+            game.players(game.numTurn-1).showpile()
+          else game.players.last.showpile()
       catch
         case e: Exception =>
           println(s"Invalid: ${e.getMessage} Please try another command.")
@@ -126,11 +153,12 @@ object textBased extends App:
           whatCommand()
         case _ => var isValid = true
 
-    while !game.endGame && !game.saved && !game.isOver do
+    while !game.endGame && !game.saved do
+        startNewRound()
         showTable()
         whatCommand()
 
-    if !game.players.exists(p => p.hand.nonEmpty) then
+    if game.endGame then
       val lastOption = game.lastCapturingPlayer
       val playerNotInGame = Player("_",game)
       var last = lastOption.getOrElse(playerNotInGame)
@@ -138,20 +166,26 @@ object textBased extends App:
         last.pile ++= table.cardsOnTable
         table.cardsOnTable.clear()
 
+      game.players.foreach(p => p.score += p.sweep*1 )
+      for i <- game.players.indices do
+        game.players(i).score += totalScores(i).sum
       val playerMostCards = game.players.maxBy(_.pile.size)
       playerMostCards.score += 1
       val playerSpades = game.players.maxBy(p=>p.pile.count(c => c.realSuitName == "Spades"))
       playerSpades.score += 2
-      val pD10 = game.players.filter(p=>p.pile.contains(Cards("Diamonds","10",game))).head
-      pD10.score += 2
-      val pS2 = game.players.filter(p=>p.pile.contains(Cards("Spades","2",game))).head
-      pS2.score += 1
+      if game.players.exists(p=>p.pile.contains(Cards("Diamonds","10",game))) then
+        val pD10 = game.players.filter(p=>p.pile.contains(Cards("Diamonds","10",game))).head
+        pD10.score += 2
+      if game.players.exists(p=>p.pile.contains(Cards("Spades","2",game))) then
+        val pS2 = game.players.filter(p=>p.pile.contains(Cards("Spades","2",game))).head
+        pS2.score += 1
       for p <- game.players do
         var aces = p.pile.count(_.realName == "Ace")
         p.score += (1*aces)
 
-    val winner = game.players.maxBy(_.score)
-    if !game.saved then
+      val winner = game.players.maxBy(_.score)
       println(s"The game has ended. We have our winner. ${winner.name}, congratulations!")
-    saveGamePrompt()
+      winner.wantsToSave = true
+
+    if game.saved then saveGamePrompt()
 

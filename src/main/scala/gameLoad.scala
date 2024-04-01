@@ -9,10 +9,10 @@ object gameLoad:
       val content = source.mkString
       val contentLines = content.split("\n")
       if contentLines.last.startsWith("End") then
-        game.isOver = true
         throw new IllegalArgumentException("Cannot continue because the game is over already.")
       else
         val playersInfo = content.split("\n").dropRight(5)
+        val dealer  = contentLines(1).split(":")(1).trim
         val tableInfo = contentLines(contentLines.indexWhere(_.startsWith("Table")))
         val deckInfo = contentLines(contentLines.indexWhere(_.startsWith("Deck")))
         val turnIndex = contentLines.indexWhere(_.startsWith("Turns:"))
@@ -38,6 +38,10 @@ object gameLoad:
             player.pile = playerpile(i)
             player.wantsToSave = false
 
+          if playernames.contains(dealer) then
+            game.dealerIndex = playernames.indexOf(dealer)
+            game.players(game.dealerIndex).isDealer = true
+
           game.table.cardsOnTable = tableCards
           game.deck.remainings = deckCards
 
@@ -45,11 +49,17 @@ object gameLoad:
           game
         else Game()
     }
+    catch {
+      case e: IllegalArgumentException =>
+        println(s"An unexpected error occurred: ${e.getMessage}")
+        val game = Game()
+        game
+    }
     finally
       source.close()
 
   def getPlayersNames(playerLines: Array[String]): mutable.Buffer[String] =
-    val eachplayerin4 = playerLines.drop(1)
+    val eachplayerin4 = playerLines.drop(2)
     var playernames = mutable.Buffer[String]()
     var i = 0
     for i <- eachplayerin4.indices do
@@ -58,7 +68,7 @@ object gameLoad:
     playernames
 
   def getPlayersScores(playerLines: Array[String]): mutable.Buffer[Int] =
-    val eachplayerin4 = playerLines.drop(1)
+    val eachplayerin4 = playerLines.drop(2)
     var playerscores = mutable.Buffer[Int]()
     var i = 0
     for i <- eachplayerin4.indices do
@@ -67,7 +77,7 @@ object gameLoad:
     playerscores
 
   def getPlayerHands(playerLines: Array[String],game:Game) =
-    val eachPlayerIn4 = playerLines.drop(1)
+    val eachPlayerIn4 = playerLines.drop(2)
     var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
 
     for i <- eachPlayerIn4.indices do
@@ -93,7 +103,7 @@ object gameLoad:
     buffer
 
   def getPlayerPiles(playerLines: Array[String],game:Game) =
-    val eachPlayerIn4 = playerLines.drop(1)
+    val eachPlayerIn4 = playerLines.drop(2)
     var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
 
     for i <- eachPlayerIn4.indices do

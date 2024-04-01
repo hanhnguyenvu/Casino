@@ -9,7 +9,7 @@ object Main extends JFXApp3:
   def start() =
 
     stage = new JFXApp3.PrimaryStage:
-      title = "UniqueProjectName"
+      title = "Casino"
       width = 600
       height = 450
 
