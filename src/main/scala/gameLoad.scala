@@ -99,7 +99,6 @@ object gameLoad:
             buffer += mutable.Buffer(Cards(psuit, pname, game))
           else
             buffer += mutable.Buffer()
-
     buffer
 
   def getPlayerPiles(playerLines: Array[String],game:Game) =
@@ -125,7 +124,6 @@ object gameLoad:
             buffer += mutable.Buffer(Cards(psuit, pname, game))
           else
             buffer += mutable.Buffer()
-
     buffer
 
   def getTable(tableLines: String,game:Game) =
