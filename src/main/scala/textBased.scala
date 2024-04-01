@@ -180,15 +180,18 @@ object textBased extends App:
       for p <- game.players do
         var aces = p.pile.count(_.realName == "Ace")
         p.score += (1*aces)
-
+      game.players.foreach(p => p.score += p.sweep*1 )
+      for i <- game.players.indices do
+          game.players(i).score += totalScores(i)
       val winner = game.players.maxBy(_.score)
       println(s"The game has ended. We have our winner. ${winner.name}, congratulations!")
       winner.wantsToSave = true
 
     if game.saved then
-      game.players.foreach(p => p.score += p.sweep*1 )
-      for i <- game.players.indices do
-        game.players(i).score += totalScores(i)
-      game.players.foreach(p => p.sweep = 0)
+      if !game.endGame then
+        game.players.foreach(p => p.score += p.sweep*1 )
+        for i <- game.players.indices do
+          game.players(i).score += totalScores(i)
+        game.players.foreach(p => p.sweep = 0)
       saveGamePrompt()
 
