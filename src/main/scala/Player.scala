@@ -23,9 +23,9 @@ class Player (val name: String,val game:Game):
     if possibleCards.isEmpty then None
     else
       val allCombinations = (1 to possibleCards.size).flatMap(possibleCards.combinations)
-      val bestCombinations = allCombinations.find(_.map(_.value).sum == values).toBuffer
+      val bestCombinations = allCombinations.filter(_.map(_.value).sum == values).toBuffer
       if bestCombinations.nonEmpty then
-        val bestCombination = bestCombinations.maxBy(_.size)
+        val bestCombination = bestCombinations.maxBy(_.length)
         bestCombination
       else None
 
