@@ -44,10 +44,10 @@ object textBased extends App:
     catch {
       case e: FileNotFoundException =>
         println(s"File '$filename' not found. Please make sure the file exists and try again.")
-      //case e: Exception =>
-        //println(s"${e.getMessage}")
-        //println("Cannot continue because the game is over already. A new game will start.\n")
-        //startNewGame()
+      case e: Exception =>
+        println(s"${e.getMessage}")
+        println("Cannot continue because the game is over already. A new game will start.\n")
+        startNewGame()
   }
 
   println("Do you want to start a new game or load from a file? If yes, enter 'load'. If not, enter anything you want, a new game will start.")
@@ -88,7 +88,7 @@ object textBased extends App:
     val table = game.table
     val dealer = game.players(game.dealerIndex)
     def setDealer() = game.players(game.dealerIndex).isDealer = true
-    var totalScores =  Array.fill(game.players.length)(mutable.Buffer[Int]())
+    var totalScores =  Array.fill(game.players.length)(0)
 
     def startNewRound(): Unit =
       if game.players.exists(p => p.score >= 16) then
@@ -130,7 +130,9 @@ object textBased extends App:
         println("")
 
     def whatCommand(): Unit =
-      if !game.players(game.numTurn).isDealer && game.players(game.numTurn).hand.isEmpty then game.numTurn = (game.numTurn + 1)%game.players.size
+      while !game.players(game.numTurn).isDealer && game.players(game.numTurn).hand.isEmpty do
+        game.numTurn = (game.numTurn + 1)%game.players.size
+
       if !game.players(game.numTurn).isDealer then
         game.players(game.numTurn).show()
       else
@@ -166,19 +168,16 @@ object textBased extends App:
         last.pile ++= table.cardsOnTable
         table.cardsOnTable.clear()
 
-      game.players.foreach(p => p.score += p.sweep*1 )
-      for i <- game.players.indices do
-        game.players(i).score += totalScores(i).sum
       val playerMostCards = game.players.maxBy(_.pile.size)
       playerMostCards.score += 1
       val playerSpades = game.players.maxBy(p=>p.pile.count(c => c.realSuitName == "Spades"))
       playerSpades.score += 2
       if game.players.exists(p=>p.pile.contains(Cards("Diamonds","10",game))) then
-        val pD10 = game.players.filter(p=>p.pile.contains(Cards("Diamonds","10",game))).head
-        pD10.score += 2
+        val playersWithD10 = game.players.filter(_.pile.contains(Cards("Diamonds", "10", game)))
+        playersWithD10.foreach(_.score += 2)
       if game.players.exists(p=>p.pile.contains(Cards("Spades","2",game))) then
-        val pS2 = game.players.filter(p=>p.pile.contains(Cards("Spades","2",game))).head
-        pS2.score += 1
+        val playersWithS2 = game.players.filter(_.pile.contains(Cards("Spades", "2", game)))
+        playersWithS2.foreach(_.score += 1)
       for p <- game.players do
         var aces = p.pile.count(_.realName == "Ace")
         p.score += (1*aces)
@@ -187,5 +186,9 @@ object textBased extends App:
       println(s"The game has ended. We have our winner. ${winner.name}, congratulations!")
       winner.wantsToSave = true
 
-    if game.saved then saveGamePrompt()
+    if game.saved then
+      game.players.foreach(p => p.score += p.sweep*1 )
+      for i <- game.players.indices do
+        game.players(i).score += totalScores(i)
+      saveGamePrompt()
 

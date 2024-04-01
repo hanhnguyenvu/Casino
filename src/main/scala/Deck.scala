@@ -15,14 +15,17 @@ class Deck(val game: Game) :
     remainings = Random.shuffle(remainings)
 
   def dealFromStart(players: mutable.Buffer[Player],table: Table, game: Game) =
+    var i = 0
     if game.gameStart then
       shuffled()
       table.cardsOnTable.clear()
+      players.foreach(_.hand.clear())
       var notDealer = players.filterNot(p => p.isDealer)
-      for player<-notDealer do
-        player.hand.clear()
-        player.hand = remainings.take(4)
-        remainings = remainings.drop(4)
+      for _ <- 1 to 4 do
+        notDealer.foreach { player =>
+          if remainings.nonEmpty then
+            player.hand += remainings.head
+            remainings = remainings.tail }
 
       table.cardsOnTable = remainings.take(4)
       remainings = remainings.drop(4)
