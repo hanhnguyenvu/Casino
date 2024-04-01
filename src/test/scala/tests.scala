@@ -164,9 +164,13 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         player.hand += card
         game.table.cardsOnTable += Cards("Hearts", "2", game)
         game.table.cardsOnTable += Cards("Hearts", "3", game)
+        game.table.cardsOnTable += Cards("Spades", "5", game)
+        game.table.cardsOnTable += Cards("Spades", "9", game)
+        game.table.cardsOnTable += Cards("Spades", "A", game)
         game.table.cardsOnTable += Cards("Hearts", "J", game)
+
         player.move("a")
-        player.pile.size shouldEqual 2
+        player.pile.length shouldEqual 3
     }
   }
 }
