@@ -34,25 +34,24 @@ object textBased extends App:
   println("CASINO!")
 
   def loadGame(): Unit =
-    println("Enter the filename to load the game state (_.txt):")
-    val filename = scala.io.StdIn.readLine()
-    try {
-      val loadedGame = gameLoad.loadGameFromFile(filename)
-      val playerNames = loadedGame.players.map(_.name)
-      playGame(loadedGame, playerNames)
-    }
-    catch {
-      case e: FileNotFoundException =>
-        println(s"File '$filename' not found. Please make sure the file exists and try again.")
-      case e: Exception =>
-        println(s"${e.getMessage}")
-        println("Cannot continue because the game is over already. A new game will start.\n")
-        startNewGame()
-  }
+    var validFileLoaded = false
+    while !validFileLoaded do
+      println("Enter the filename to load the game state (_.txt):")
+      val filename = scala.io.StdIn.readLine().trim
+      try {
+        val loadedGame = gameLoad.loadGameFromFile(filename)
+        val playerNames = loadedGame.players.map(_.name)
+        playGame(loadedGame, playerNames)
+        validFileLoaded = true
+      } catch {
+        case e: FileNotFoundException =>
+          println(s"File '$filename' not found. Please make sure the file exists and try again.\n")
+        case e: Exception =>
+          println("Please try again.\n")}
 
   println("Do you want to start a new game or load from a file? If yes, enter 'load'. If not, enter anything you want, a new game will start.")
   val response = scala.io.StdIn.readLine().toLowerCase()
-  if response == "load" then
+  if response.trim == "load" then
     loadGame()
   else
     startNewGame()
