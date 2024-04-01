@@ -189,5 +189,6 @@ object textBased extends App:
       game.players.foreach(p => p.score += p.sweep*1 )
       for i <- game.players.indices do
         game.players(i).score += totalScores(i)
+      game.players.foreach(p => p.sweep = 0)
       saveGamePrompt()
 
