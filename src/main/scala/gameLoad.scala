@@ -11,11 +11,12 @@ object gameLoad:
       if contentLines.last.startsWith("End") then
         throw new IllegalArgumentException("Cannot continue because the game is over already.")
       else
-        val playersInfo = content.split("\n").dropRight(5)
+        val playersInfo = content.split("\n").dropRight(6)
         val dealer  = contentLines(1).split(":")(1).trim
         val tableInfo = contentLines(contentLines.indexWhere(_.startsWith("Table")))
         val deckInfo = contentLines(contentLines.indexWhere(_.startsWith("Deck")))
         val turnIndex = contentLines.indexWhere(_.startsWith("Turns:"))
+        val saver = contentLines(contentLines.indexWhere(_.startsWith("Saver:"))).split(":")(1).trim
         val lastIndex = contentLines.indexWhere(_.startsWith("Last"))
 
         val playernames = getPlayersNames(playersInfo)
@@ -29,7 +30,7 @@ object gameLoad:
           val turn = contentLines(turnIndex).split(":")(1).trim.toInt
           val lastcapturer = contentLines(lastIndex).split(":")(1).trim
           game.turn = turn
-          game.numTurn = game.turn % playernames.size
+          game.numTurn = playernames.indexOf(saver)
           for i <- playernames.indices do
             val player = Player(playernames(i), game)
             game.addPlayer(player)
