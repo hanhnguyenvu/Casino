@@ -23,7 +23,7 @@ object GameSaver:
     sb.append("\n")
     if !game.endGame then
       sb.append(s"Turns: ${game.turn}")
-      sb.append(s"\nIt's ${game.players(game.turn%game.players.size).name}'s turn now.")
+      sb.append(s"\nIt's ${game.players(game.turn%game.players.size+1).name}'s turn now.")
       sb.append("\n")
       sb.append(s"Last person to capture something: ${game.lastCapturingPlayer.getOrElse(Player("_",game)).name}")
     else sb.append("\nEnd")
