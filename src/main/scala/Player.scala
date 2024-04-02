@@ -2,6 +2,7 @@ import scala.collection.mutable
 
 class Player (val name: String,val game:Game):
   var sweep = 0
+  var totalScore = 0
   var isDealer = false
   var wantsToDeal = false
   var wantsToSave = false
@@ -66,9 +67,21 @@ class Player (val name: String,val game:Game):
           this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
         else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
       if theCards.size > 1 then
-        var c = theCards.filter(c => c.realSuitName != "Spades").head
-        this.hand = this.hand.filter(cards => cards != c)
-        table.cardsOnTable += c
+        if theCards.exists( c => c.realName == "10") then
+          var d = theCards.filterNot( c => c.realSuitName == "Diamonds")
+          var s = d.filterNot( c => c.realSuitName == "Spades")
+          if s.isEmpty then
+            var s1 = d.filter(c => c.realSuitName == "Spades").head
+            this.hand = this.hand.filter(cards => cards != s1)
+            table.cardsOnTable += s1
+          else
+            var another = s.head
+            this.hand = this.hand.filter(cards => cards != another)
+            table.cardsOnTable += another
+        else
+          var c = theCards.filter(c => c.realSuitName != "Spades").head
+          this.hand = this.hand.filter(cards => cards != c)
+          table.cardsOnTable += c
       else
         this.hand -= theCards.head
         table.cardsOnTable += theCards.head
