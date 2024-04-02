@@ -72,12 +72,16 @@ object textBased extends App:
       println("Not enough players in the game. Cannot start game. Type another number of players.")
 
       numPlayers = scala.io.StdIn.readInt()
-
-    for i <- 1 to numPlayers do
-      print(s"Player ${i}: ")
+    var i = 0
+    while i < numPlayers do
+      print(s"Player ${i+1}: ")
       val playerName = scala.io.StdIn.readLine()
-      playerNames += playerName
-      game.addPlayer(Player(playerName,game))
+      if playerNames.contains(playerName) then
+        println("This name is already taken. Please choose another one.")
+      else
+        playerNames += playerName
+        game.addPlayer(Player(playerName,game))
+        i += 1
 
     val dealer = game.players(game.dealerIndex)
 
