@@ -11,6 +11,8 @@ object GameSaver:
     sb.append(s"Current dealer: ${game.players(game.dealerIndex).name}\n")
     for player <- game.players do
       sb.append(s"${player.name}: ${player.score}\n")
+      sb.append(s"Total: ${player.totalScore}\n")
+      sb.append(s"Sweep: ${player.sweep}\n")
       sb.append(s"Hand: ${player.hand.mkString(", ")}")
       sb.append("\n")
       sb.append(s"Pile: ${player.pile.mkString(", ")}")
@@ -89,12 +91,12 @@ object textBased extends App:
     val table = game.table
     val dealer = game.players(game.dealerIndex)
     def setDealer() = game.players(game.dealerIndex).isDealer = true
-    var totalScores =  Array.fill(game.players.length)(0)
+
 
     def startNewRound(): Unit =
       if game.players.exists(p => p.score >= 16) then
         for i <- game.players.indices do
-          totalScores(i) += game.players.map(p=>p.score)(i)
+          game.players(i).totalScore += game.players.map(p=>p.score)(i)
         game.players.foreach(p => p.score = 0)
         game.gameStart = true
         game.players(game.dealerIndex).isDealer = false
@@ -103,7 +105,7 @@ object textBased extends App:
         game.numTurn = (game.dealerIndex + 1) % game.players.size
         game.deck.shuffled()
         game.deck.dealFromStart(game.players, table, game)
-        println("\nNew round\n")
+        println("\n---New round---\n")
         game.endRound = false
 
     def saveGameToFile(game: Game, filename: String): Unit =
@@ -129,11 +131,11 @@ object textBased extends App:
         println("\nTable: ")
         table.cardsOnTable.foreach(println)
         println("")
-
+        
     def whatCommand(): Unit =
       while !game.players(game.numTurn).isDealer && game.players(game.numTurn).hand.isEmpty do
         game.numTurn = (game.numTurn + 1)%game.players.size
-
+      
       if !game.players(game.numTurn).isDealer then
         game.players(game.numTurn).show()
       else
@@ -166,6 +168,8 @@ object textBased extends App:
       val playerNotInGame = Player("_",game)
       var last = lastOption.getOrElse(playerNotInGame)
       if last.name != playerNotInGame.name && game.endGame then
+        for c <- table.cardsOnTable do 
+          last.score += c.value
         last.pile ++= table.cardsOnTable
         table.cardsOnTable.clear()
 
@@ -184,16 +188,11 @@ object textBased extends App:
         p.score += (1*aces)
       game.players.foreach(p => p.score += p.sweep*1 )
       for i <- game.players.indices do
-          game.players(i).score += totalScores(i)
-      val winner = game.players.maxBy(_.score)
+          game.players(i).totalScore += game.players(i).score
+      
+      val winner = game.players.maxBy(_.totalScore)
       println(s"The game has ended. We have our winner. ${winner.name}, congratulations!")
       winner.wantsToSave = true
 
-    if game.saved then
-      if !game.endGame then
-        game.players.foreach(p => p.score += p.sweep*1 )
-        for i <- game.players.indices do
-          game.players(i).score += totalScores(i)
-        game.players.foreach(p => p.sweep = 0)
-      saveGamePrompt()
+    if game.saved then saveGamePrompt()
 

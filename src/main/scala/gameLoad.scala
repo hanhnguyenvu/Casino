@@ -21,6 +21,8 @@ object gameLoad:
 
         val playernames = getPlayersNames(playersInfo)
         val playerscores = getPlayersScores(playersInfo)
+        val playerstotal = getPlayerTotal(playersInfo)
+        val playersweep = getPlayersSweep(playersInfo)
         val playerhand = getPlayerHands(playersInfo,game)
         val playerpile = getPlayerPiles(playersInfo,game)
         val tableCards = getTable(tableInfo,game)
@@ -35,6 +37,8 @@ object gameLoad:
             val player = Player(playernames(i), game)
             game.addPlayer(player)
             player.score = playerscores(i)
+            player.totalScore += playerstotal(i)
+            player.sweep = playersweep(i)
             player.hand = playerhand(i)
             player.pile = playerpile(i)
             player.wantsToSave = false
@@ -48,7 +52,7 @@ object gameLoad:
 
           if playernames.contains(lastcapturer) then game.setLastCapturingPlayer(Player(lastcapturer,game))
           game
-        else Game()
+        else throw new IllegalArgumentException("Cannot continue because the game is over already.")
     }
     catch {
       case e: IllegalArgumentException =>
@@ -64,7 +68,7 @@ object gameLoad:
     var playernames = mutable.Buffer[String]()
     var i = 0
     for i <- eachplayerin4.indices do
-      if i % 4 == 0 then
+      if i % 6 == 0 then
         playernames += eachplayerin4(i).split(":")(0).trim
     playernames
 
@@ -73,16 +77,34 @@ object gameLoad:
     var playerscores = mutable.Buffer[Int]()
     var i = 0
     for i <- eachplayerin4.indices do
-      if i % 4 == 0 then
+      if i % 6 == 0 then
         playerscores += eachplayerin4(i).split(":")(1).trim.toInt
     playerscores
-
+  
+  def getPlayerTotal(playerLines: Array[String]): mutable.Buffer[Int] =
+    val eachplayerin4 = playerLines.drop(2)
+    var playertotal = mutable.Buffer[Int]()
+    var i = 0
+    for i <- eachplayerin4.indices do
+      if i % 6 == 1 then
+        playertotal += eachplayerin4(i).split(":")(1).trim.toInt
+    playertotal
+  
+  def getPlayersSweep(playerLines: Array[String]): mutable.Buffer[Int] =
+    val eachplayerin4 = playerLines.drop(2)
+    var playersweep = mutable.Buffer[Int]()
+    var i = 0
+    for i <- eachplayerin4.indices do
+      if i % 6 == 2 then
+        playersweep += eachplayerin4(i).split(":")(1).trim.toInt
+    playersweep
+    
   def getPlayerHands(playerLines: Array[String],game:Game) =
     val eachPlayerIn4 = playerLines.drop(2)
     var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
 
     for i <- eachPlayerIn4.indices do
-      if i % 4 == 1 then
+      if i % 6 == 3 then
         var a = eachPlayerIn4(i).split(":")(1).trim
         if a.contains(", ") then
           var cards = a.split(", ").toBuffer
@@ -107,7 +129,7 @@ object gameLoad:
     var buffer = mutable.Buffer[mutable.Buffer[Cards]]()
 
     for i <- eachPlayerIn4.indices do
-      if i % 4 == 2 then
+      if i % 6 == 4 then
         var a = eachPlayerIn4(i).split(":")(1).trim
         if a.contains(", ") then
           var cards = a.split(", ").toBuffer
