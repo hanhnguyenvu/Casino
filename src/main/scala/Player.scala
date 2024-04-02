@@ -81,6 +81,7 @@ class Player (val name: String,val game:Game):
   def showpile(): Unit =
     println(s"$name's pile:")
     pile.foreach(println)
+    println(" ")
 
   def isInHand(card: Cards) : Boolean = hand.contains(card)
 
