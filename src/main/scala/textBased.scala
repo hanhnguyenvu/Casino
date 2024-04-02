@@ -131,11 +131,11 @@ object textBased extends App:
         println("\nTable: ")
         table.cardsOnTable.foreach(println)
         println("")
-        
+
     def whatCommand(): Unit =
       while !game.players(game.numTurn).isDealer && game.players(game.numTurn).hand.isEmpty do
         game.numTurn = (game.numTurn + 1)%game.players.size
-      
+
       if !game.players(game.numTurn).isDealer then
         game.players(game.numTurn).show()
       else
@@ -163,12 +163,13 @@ object textBased extends App:
         showTable()
         whatCommand()
 
+
     if game.endGame then
       val lastOption = game.lastCapturingPlayer
       val playerNotInGame = Player("_",game)
       var last = lastOption.getOrElse(playerNotInGame)
       if last.name != playerNotInGame.name && game.endGame then
-        for c <- table.cardsOnTable do 
+        for c <- table.cardsOnTable do
           last.score += c.value
         last.pile ++= table.cardsOnTable
         table.cardsOnTable.clear()
@@ -189,8 +190,11 @@ object textBased extends App:
       game.players.foreach(p => p.score += p.sweep*1 )
       for i <- game.players.indices do
           game.players(i).totalScore += game.players(i).score
-      
+
       val winner = game.players.maxBy(_.totalScore)
+      if game.numTurn >= 1 then
+        game.players(game.numTurn-1).showpile()
+      else game.players.last.showpile()
       println(s"The game has ended. We have our winner. ${winner.name}, congratulations!")
       winner.wantsToSave = true
 
