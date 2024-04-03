@@ -33,13 +33,22 @@ object textBased extends App:
     val table = game.table
     var gameDeck = game.deck
 
-    println("Welcome to the Casino! How many players would it be?")
-    var numPlayers = scala.io.StdIn.readInt()
+    var numPlayers : Int = 0
     var playerNames = mutable.Buffer[String]()
-    while numPlayers <= 1 do
-      println("Not enough players in the game. Cannot start game. Type another number of players.")
-
-      numPlayers = scala.io.StdIn.readInt()
+    var validInput = false
+    while !validInput do
+      try {
+        println("Welcome to the Casino! How many players would it be?")
+        numPlayers = scala.io.StdIn.readInt()
+        while numPlayers <= 1 do
+          println("Not enough players in the game. Cannot start game. Type another number of players.")
+          numPlayers = scala.io.StdIn.readInt()
+        validInput = true
+      }
+      catch {
+        case e: Exception =>
+          validInput = false
+          println("Input must be an integer. Try again.")}
     var i = 0
     while i < numPlayers do
       print(s"Player ${i+1}: ")
