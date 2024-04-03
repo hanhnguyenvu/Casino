@@ -1,9 +1,11 @@
-import org.scalatest.matchers.should._
+import Logic.{Cards, Deck, Game, Player, Table}
+import org.scalatest.matchers.should.*
 import org.scalatest.wordspec.AnyWordSpec
+
 import scala.collection.mutable
 
 class CardsSpec extends AnyWordSpec with Matchers {
-  "A Cards" when {
+  "A Logic.Cards" when {
     "created" should {
       val game = new Game()
       "have correct suit and name" in {
@@ -47,7 +49,7 @@ class CardsSpec extends AnyWordSpec with Matchers {
 }
 
 class DeckSpec extends AnyWordSpec with Matchers {
-  "A Deck" when {
+  "A Logic.Deck" when {
     "created" should {
       val game = new Game()
       "have correct number of cards" in {
@@ -94,7 +96,7 @@ class DeckSpec extends AnyWordSpec with Matchers {
 
 
 class TableSpec extends AnyWordSpec with Matchers {
-  "A Table" when {
+  "A Logic.Table" when {
     "created" should {
       "be empty" in {
         val game = new Game()
@@ -130,7 +132,7 @@ class TableSpec extends AnyWordSpec with Matchers {
 }
 
 class PlayerSpec extends AnyWordSpec with Matchers {
-  "A Player" when {
+  "A Logic.Player" when {
     "putting down a card" should {
       "remove the card from the hand" in {
         val game = new Game()
@@ -145,31 +147,34 @@ class PlayerSpec extends AnyWordSpec with Matchers {
       }
     }
     "move" should  {
-      "put down the card if no combination is found" in {
+      "put down the right card if no combination is found" in {
         val game = new Game()
         val player = new Player("Alice", game)
         game.addPlayer(player)
-        val card = Cards("Hearts", "A", game)
+        val card = Cards("Hearts", "2", game)
+        val card2 = Cards("Spades", "2", game)
         player.hand += card
+        player.hand += card2
         game.table.cardsOnTable += Cards("Hearts", "2", game)
-        game.table.cardsOnTable += Cards("Hearts", "3", game)
-        player.move("a")
-        player.score shouldEqual 0
+        game.table.cardsOnTable += Cards("Hearts", "5", game)
+        game.table.cardsOnTable += Cards("Hearts", "4", game)
+        player.move("2")
+        player.pile.size shouldEqual 2
   }
+    }
       "perform properly when there exists combination" in {
         val game = new Game()
         val player = new Player("Alice", game)
         game.addPlayer(player)
-        val card = Cards("Hearts", "Ace", game)
+        val card = Cards("Spades", "2", game)
         player.hand += card
         game.table.cardsOnTable += Cards("Hearts", "2", game)
-        game.table.cardsOnTable += Cards("Hearts", "3", game)
+        game.table.cardsOnTable += Cards("Hearts", "4", game)
         game.table.cardsOnTable += Cards("Spades", "5", game)
-        game.table.cardsOnTable += Cards("Spades", "9", game)
-        game.table.cardsOnTable += Cards("Spades", "A", game)
-        game.table.cardsOnTable += Cards("Hearts", "J", game)
+        game.table.cardsOnTable += Cards("Spades", "8", game)
 
-        player.move("a")
+
+        player.move("2")
         player.pile.length shouldEqual 3
     }
   }
@@ -177,7 +182,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
 
 
 class GameSpec extends AnyWordSpec with Matchers {
-  "A Game" when {
+  "A Logic.Game" when {
     "created" should {
       "initialize with an empty player list" in {
         val game = new Game()
@@ -253,5 +258,4 @@ class GameSpec extends AnyWordSpec with Matchers {
       }
     }
   }
-}
 }

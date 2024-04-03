@@ -1,8 +1,11 @@
+package Interface
+
+import Interface.Main.stage
 import scalafx.application.JFXApp3
 import scalafx.scene.Scene
 import scalafx.scene.layout.Pane
+import scalafx.scene.paint.Color.*
 import scalafx.scene.shape.Rectangle
-import scalafx.scene.paint.Color._
 
 object Main extends JFXApp3:
 

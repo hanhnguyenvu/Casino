@@ -1,6 +1,10 @@
+package Interface
+
+import Logic.{Cards, Game, Player}
+
+import java.io.*
 import scala.collection.mutable
 import scala.io.StdIn.readLine
-import java.io.*
 
 object textBased extends App:
   println("CASINO!")
@@ -51,7 +55,7 @@ object textBased extends App:
           println("Input must be an integer. Try again.")}
     var i = 0
     while i < numPlayers do
-      print(s"Player ${i+1}: ")
+      print(s"Logic.Player ${i+1}: ")
       val playerName = scala.io.StdIn.readLine()
       if playerNames.contains(playerName) then
         println("This name is already taken. Please choose another one.")
@@ -95,7 +99,7 @@ object textBased extends App:
       val bw = new BufferedWriter(new FileWriter(file))
       bw.write(content)
       bw.close()
-      println(s"Game state saved to $filename")
+      println(s"Logic.Game state saved to $filename")
 
     def saveGamePrompt(): Unit =
       println("Do you want to save the game state? (yes/no)")
@@ -105,7 +109,7 @@ object textBased extends App:
         val filename = readLine()
         saveGameToFile(game, filename)
       else
-        println("Game state not saved.")
+        println("Logic.Game state not saved.")
 
     def showTable() =
       if !game.endGame && !game.saved then

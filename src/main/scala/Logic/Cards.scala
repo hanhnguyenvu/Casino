@@ -1,3 +1,4 @@
+package Logic
 
 class Cards(val suit: String, val name: String, val game: Game) :
 

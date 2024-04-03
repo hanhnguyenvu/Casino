@@ -1,3 +1,7 @@
+package Interface
+
+import Logic.{Game, Player}
+
 object GameSaver:
   def gameStateToString(game: Game): String =
     val sb = new StringBuilder()
@@ -13,10 +17,10 @@ object GameSaver:
       sb.append(s"Pile: ${player.pile.mkString(", ")}")
       sb.append("\n")
       sb.append("---\n")
-    sb.append(s"Table: ${game.table.cardsOnTable.mkString(", ")}")
+    sb.append(s"Logic.Table: ${game.table.cardsOnTable.mkString(", ")}")
     sb.append("\n")
 
-    sb.append(s"Deck: ${game.deck.remainings.mkString(", ")}")
+    sb.append(s"Logic.Deck: ${game.deck.remainings.mkString(", ")}")
     sb.append("\n")
     if !game.endGame then
       val saver = game.players.filter(p=>p.wantsToSave).head

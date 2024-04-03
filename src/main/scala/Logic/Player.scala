@@ -1,3 +1,5 @@
+package Logic
+
 import scala.collection.mutable
 
 class Player (val name: String,val game:Game):

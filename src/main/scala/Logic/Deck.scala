@@ -1,3 +1,7 @@
+package Logic
+
+import Logic.Cards
+
 import scala.collection.mutable
 import scala.util.Random
 

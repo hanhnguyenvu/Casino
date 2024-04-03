@@ -1,3 +1,7 @@
+package Interface
+
+import Logic.{Cards, Game, Player}
+
 import scala.collection.mutable
 import scala.io.Source
 
@@ -13,8 +17,8 @@ object gameLoad:
       else
         val playersInfo = content.split("\n").dropRight(6)
         val dealer  = contentLines(1).split(":")(1).trim
-        val tableInfo = contentLines(contentLines.indexWhere(_.startsWith("Table")))
-        val deckInfo = contentLines(contentLines.indexWhere(_.startsWith("Deck")))
+        val tableInfo = contentLines(contentLines.indexWhere(_.startsWith("Logic.Table")))
+        val deckInfo = contentLines(contentLines.indexWhere(_.startsWith("Logic.Deck")))
         val turnIndex = contentLines.indexWhere(_.startsWith("Turns:"))
         val saver = contentLines(contentLines.indexWhere(_.startsWith("Saver:"))).split(":")(1).trim
         val lastIndex = contentLines.indexWhere(_.startsWith("Last"))

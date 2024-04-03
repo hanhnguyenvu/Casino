@@ -1,3 +1,5 @@
+package Logic
+
 import scala.collection.mutable
 
 class Table(val game:Game):
