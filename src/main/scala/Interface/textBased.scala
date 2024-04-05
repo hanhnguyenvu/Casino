@@ -132,7 +132,7 @@ object textBased extends App:
         else readLine(s"\nIt's ${playerNames(game.numTurn)}'s turn. ${playerNames(game.numTurn)} is the current dealer. You can only see your hand or pile in this round. Deal for the next player to play.\n")
       try
         game.playTurn(command)
-        if !game.players(game.numTurn).isDealer then
+        if !game.players(game.numTurn).isDealer then              //show player's pile after he finished the move
           if game.numTurn >= 1 then
             game.players(game.numTurn-1).showpile()
           else game.players.last.showpile()
@@ -149,7 +149,7 @@ object textBased extends App:
         whatCommand()
 
 
-    if game.endGame then
+    if game.endGame then                                      //bonus points are added after the game ends
       val lastOption = game.lastCapturingPlayer
       val playerNotInGame = Player("_",game)
       var last = lastOption.getOrElse(playerNotInGame)
@@ -177,9 +177,11 @@ object textBased extends App:
           game.players(i).totalScore += game.players(i).score
 
       val winner = game.players.maxBy(_.totalScore)
-      if game.numTurn >= 1 then
+
+      if game.numTurn >= 1 then                         //show the pile of the last player to play the card when the game ends, as numTurn will automatically + 1 when the game ends
         game.players(game.numTurn-1).showpile()
       else game.players.last.showpile()
+
       println(s"The game has ended. We have our winner. ${winner.name}, congratulations!")
       winner.wantsToSave = true
 
