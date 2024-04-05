@@ -105,7 +105,7 @@ object textBased extends App:
       println("Do you want to save the game state? (yes/no)")
       val response = readLine().toLowerCase()
       if response == "yes" || response == "y" then
-        println("Enter the filename to save the game state (_.txt):")
+        println("Enter the filename to save the game state (.txt):")
         val filename = readLine()
         saveGameToFile(game, filename)
       else
