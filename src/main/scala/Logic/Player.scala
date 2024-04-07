@@ -11,9 +11,6 @@ class Player (val name: String,val game:Game):
   var table = game.table 
   var hand: mutable.Buffer[Cards] = mutable.Buffer()
   var score: Int = 0
-  var cardsTakenFromTable: mutable.Buffer[Cards] = mutable.Buffer()
-  var cardsNum = cardsTakenFromTable.size
-  var SpadesNum = cardsTakenFromTable.count(card => card.realSuitName == "Spades")
   var pile: mutable.Buffer[Cards] = mutable.Buffer()
 
   def deal() =
