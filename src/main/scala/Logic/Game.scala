@@ -21,13 +21,6 @@ class Game():
   def addPlayer(player: Player) =
     players += player
 
-
-  def fillTable() =
-    if table.isEmpty && players.size >= 2 then
-      table.cardsOnTable = deck.remainings.take(4)
-      deck.remainings.drop(4)
-
-
   def playTurn(input: String) =
     if players.size >= 2 then
       var currentPlayer = players(numTurn)
