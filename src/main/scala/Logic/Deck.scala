@@ -1,7 +1,4 @@
 package Logic
-
-import Logic.Cards
-
 import scala.collection.mutable
 import scala.util.Random
 
@@ -18,7 +15,7 @@ class Deck(val game: Game) :
   def shuffled() =
     remainings = Random.shuffle(remainings)
 
-  def dealFromStart(players: mutable.Buffer[Player],table: Table, game: Game) =
+  def dealFromStart(players: mutable.Buffer[Player],table: Table, game: Game) =  //deal 4 cards to the players, 1 card a player at a row so that the number of cards in each player's hand is balanced.
     var i = 0
     if game.gameStart then
       shuffled()
@@ -34,7 +31,7 @@ class Deck(val game: Game) :
       table.cardsOnTable = remainings.take(4)
       remainings = remainings.drop(4)
 
-  def deal(player:Player) =
+  def deal(player:Player) =   //deal the card to the player when he ends his turn
     if remainings.nonEmpty then
       val drawnCard = remainings.head
       player.hand += drawnCard

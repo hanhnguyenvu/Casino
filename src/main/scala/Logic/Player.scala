@@ -13,11 +13,11 @@ class Player (val name: String,val game:Game):
   var score: Int = 0
   var pile: mutable.Buffer[Cards] = mutable.Buffer()
 
-  def deal() =
+  def deal() =            //for the dealer to skip to the next player
     if isDealer then wantsToDeal = true
     else throw new IllegalArgumentException("You are not the dealer.")
 
-  def findBestCombination(card: Cards) =
+  def findBestCombination(card: Cards) =   //find the best combination - combination with the most cards
     val values = card.value
     val possibleCards = game.table.cardsOnTable.filter(_.value <= values)
     if possibleCards.isEmpty then None
@@ -66,7 +66,7 @@ class Player (val name: String,val game:Game):
           this.hand.filter(c => (c.realName.toLowerCase == card.toLowerCase))
         else this.hand.filter(c => (c.realName.toLowerCase.head == card.toLowerCase.head))
       if theCards.size > 1 then
-        if theCards.exists( c => c.realName == "10") then
+        if theCards.exists( c => c.realName == "10") then             //avoid putting down the card with the same name but greater value, else avoid putting down spades cards
           var d = theCards.filterNot( c => c.realSuitName == "Diamonds")
           var s = d.filterNot( c => c.realSuitName == "Spades")
           if s.isEmpty then

@@ -15,13 +15,13 @@ class Game():
   var dealerIndex: Int = 0
 
   var lastCapturingPlayer: Option[Player] = None
-  def setLastCapturingPlayer(player: Player): Unit =
+  def setLastCapturingPlayer(player: Player): Unit =  //find the last person to capture so that the bonus points are added at the end of the game
     lastCapturingPlayer = Some(player)
 
   def addPlayer(player: Player) =
     players += player
 
-  def playTurn(input: String) =
+  def playTurn(input: String) =    //make the game flows properly, assigning the turns to the right player
     if players.size >= 2 then
       var currentPlayer = players(numTurn)
       val commands = Command(input)

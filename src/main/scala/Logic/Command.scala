@@ -11,5 +11,5 @@ class Command (input: String) :
     case "pile" => Some(player.showpile())
     case "save" => Some(player.save())
     case "deal" => Some(player.deal())
-    case _ => throw new IllegalArgumentException("Logic.Command not found.")
+    case _ => throw new IllegalArgumentException("Command not found.")
 
