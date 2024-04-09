@@ -52,5 +52,3 @@ class Cards(val suit: String, val name: String, val game: Game) :
   def isOnTable: Boolean = game.table.isOnTable(this)
   
   override def toString = s"${this.realName} of ${this.realSuitName}"
-
-

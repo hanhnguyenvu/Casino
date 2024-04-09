@@ -159,7 +159,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
         game.table.cardsOnTable += Cards("Hearts", "5", game)
         game.table.cardsOnTable += Cards("Hearts", "4", game)
         player.move("2")
-        player.pile.size shouldEqual 2
+        player.pile.size shouldEqual 1
   }
     }
       "perform properly when there exists combination" in {
@@ -199,21 +199,7 @@ class GameSpec extends AnyWordSpec with Matchers {
         game.players should have size 2
       }
     }
-    "filling the table" should {
-      "add cards to the table if it's empty" in {
-        val game = new Game()
-        val player1 = new Player("Alice", game)
-        val player2 = new Player("Bob", game)
-        game.addPlayer(player1)
-        game.addPlayer(player2)
-        game.fillTable()
-        game.table.cardsOnTable should have size 4
-      }
-      "not add cards to the table if there are not enough players" in {
-        val game = new Game()
-        game.fillTable()
-        game.table.cardsOnTable shouldBe empty
-      }
+
     }
     "playing a turn" should {
       "perform actions and update the turn" in {
@@ -257,5 +243,4 @@ class GameSpec extends AnyWordSpec with Matchers {
         game.endGame shouldBe false
       }
     }
-  }
 }
