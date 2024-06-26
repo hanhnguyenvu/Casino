@@ -5,7 +5,7 @@ import org.scalatest.wordspec.AnyWordSpec
 import scala.collection.mutable
 
 class CardsSpec extends AnyWordSpec with Matchers {
-  "A Logic.Cards" when {
+  "Cards" when {
     "created" should {
       val game = new Game()
       "have correct suit and name" in {
@@ -49,7 +49,7 @@ class CardsSpec extends AnyWordSpec with Matchers {
 }
 
 class DeckSpec extends AnyWordSpec with Matchers {
-  "A Logic.Deck" when {
+  "Deck" when {
     "created" should {
       val game = new Game()
       "have correct number of cards" in {
@@ -96,7 +96,7 @@ class DeckSpec extends AnyWordSpec with Matchers {
 
 
 class TableSpec extends AnyWordSpec with Matchers {
-  "A Logic.Table" when {
+  "Table" when {
     "created" should {
       "be empty" in {
         val game = new Game()
@@ -132,7 +132,7 @@ class TableSpec extends AnyWordSpec with Matchers {
 }
 
 class PlayerSpec extends AnyWordSpec with Matchers {
-  "A Logic.Player" when {
+  "Player" when {
     "putting down a card" should {
       "remove the card from the hand" in {
         val game = new Game()
@@ -182,7 +182,7 @@ class PlayerSpec extends AnyWordSpec with Matchers {
 
 
 class GameSpec extends AnyWordSpec with Matchers {
-  "A Logic.Game" when {
+  "Game" when {
     "created" should {
       "initialize with an empty player list" in {
         val game = new Game()
